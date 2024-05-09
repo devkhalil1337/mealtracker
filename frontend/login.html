@@ -1,114 +1,121 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login Page</title>
-    <style>
-      body {
-        margin: 0;
-        padding: 0;
-        font-family: Arial, sans-serif;
-        background-color: #f5f5f5;
-      }
 
-      .container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login Page</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+    }
 
-      .card {
-        width: 350px;
-        padding: 20px;
-        border-radius: 10px;
-        background-color: #fff;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      }
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
 
-      .form-group {
-        margin-bottom: 20px;
-      }
+    .card {
+      width: 350px;
+      padding: 20px;
+      border-radius: 10px;
+      background-color: #fff;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
 
-      .form-group label {
-        display: block;
-        margin-bottom: 5px;
-      }
+    .form-group {
+      margin-bottom: 20px;
+    }
 
-      .form-group input {
-        width: 100%;
-        padding-top: 10px;
-        padding-bottom: 10px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-      }
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+    }
 
-      .form-group button {
-        width: 100%;
-        padding: 10px;
-        background-color: #91c789;
-        color: #fff;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <div class="card">
-        <h2>Login</h2>
-        <form id="login-form">
-          <div class="form-group">
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" required />
-          </div>
-          <div class="form-group">
-            <label for="password">Password</label>
-            <input type="password" id="password" name="password" required />
-          </div>
-          <div class="form-group">
-            <button type="submit">Login</button>
-          </div>
-          <div class="form-group">
-            <p>Don't have an account? <a href="./register.html">Sign up</a></p>
-          </div>
-        </form>
-      </div>
+    .form-group input {
+      width: 100%;
+      padding-top: 10px;
+      padding-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    .form-group button {
+      width: 100%;
+      padding: 10px;
+      background-color: #91c789;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="card">
+      <h2>Login</h2>
+      <form id="login-form">
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" required />
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" required />
+        </div>
+        <div class="form-group">
+          <button type="submit">Login</button>
+        </div>
+        <div class="form-group">
+          <p>Don't have an account? <a href="./register.html">Sign up</a></p>
+        </div>
+      </form>
     </div>
+  </div>
 
-    <script>
-      const isLoggedIn = localStorage.getItem("loggedIn");
+  <script>
+    const isLoggedIn = localStorage.getItem("loggedIn");
 
-      if (isLoggedIn === "true") {
-        // Redirect to index.html if already logged in
-        window.location.href = "index.html";
-      }
+    if (isLoggedIn === "true") {
+      // Redirect to index.html if already logged in
+      window.location.href = "index.html";
+    }
 
-      const loginForm = document.getElementById("login-form");
+    const loginForm = document.getElementById("login-form");
 
-      loginForm.addEventListener("submit", function (event) {
-        event.preventDefault();
+    loginForm.addEventListener("submit", function (event) {
+      event.preventDefault();
 
-        const email = document.getElementById("email").value;
-        const password = document.getElementById("password").value;
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
 
-        // Get user data from local storage
-        const userData = JSON.parse(localStorage.getItem("userData"));
+      // Create an object with the login credentials
+      const credentials = {
+        email: email,
+        password: password
+      };
 
-        // Check if userData exists and is an array
-        if (Array.isArray(userData)) {
-          // Loop through user data to find the matching user
-          const user = userData.find(
-            (user) => user.email === email && user.password === password
-          );
-
-          if (user) {
+      // Make a POST request to the login endpoint
+      fetch('http://localhost:3000/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(credentials)
+      })
+        .then(response => response.json())
+        .then(data => {
+          // Check if login was successful
+          if (data.success) {
             // Save the logged-in user ID in local storage
-            localStorage.setItem("loggedInUserId", user.id);
-
-            // Login successful
+            localStorage.setItem("loggedInUserId", data.userId);
             localStorage.setItem("loggedIn", "true");
             // Redirect or do any other necessary action
             window.location.href = "index.html";
@@ -116,11 +123,14 @@
             // Login failed
             alert("Invalid email or password. Please try again.");
           }
-        } else {
-          // No user data found
-          alert("No user data found. Please sign up first.");
-        }
-      });
-    </script>
-  </body>
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert("An error occurred during login. Please try again later.");
+        });
+    });
+  </script>
+
+</body>
+
 </html>

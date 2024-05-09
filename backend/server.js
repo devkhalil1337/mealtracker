@@ -18,7 +18,7 @@ const app = express();
 
 app.use(bodyParser.json());
 
-// Create User
+// Create User 
 app.post('/api/users', (req, res) => {
     console.log(req.body) //shows undefined
     const { username, password, email, weight, age, sex } = req.body;
@@ -52,6 +52,25 @@ app.get('/api/users/:userId', (req, res) => {
         })
         .catch(err => res.status(500).json({ error: err.message }));
 });
+
+// Login User
+app.post('/api/login', (req, res) => {
+    const { email, password } = req.body;
+    const query = `
+        SELECT UserID FROM [dbo].[User] WHERE Email = '${email}' AND Password = '${password}'
+    `;
+    sql.query(query)
+        .then(result => {
+            if (result.recordset.length > 0) {
+                const userId = result.recordset[0].UserID;
+                res.json({ success: true, userId });
+            } else {
+                res.status(401).json({ success: false, message: 'Invalid email or password' });
+            }
+        })
+        .catch(err => res.status(500).json({ error: err.message }));
+});
+
 
 
 // Update User
