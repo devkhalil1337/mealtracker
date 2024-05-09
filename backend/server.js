@@ -1,6 +1,6 @@
 const express = require('express');
 const sql = require('mssql');
-
+const bodyParser = require('body-parser');
 const dbConfig = {
     user: 'needs',
     password: 'Valdemar02',
@@ -16,19 +16,27 @@ const dbConfig = {
 
 const app = express();
 
-
+app.use(bodyParser.json());
 
 // Create User
 app.post('/api/users', (req, res) => {
+    console.log(req.body) //shows undefined
     const { username, password, email, weight, age, sex } = req.body;
+    // Truncate sex to a single character
+    const truncatedSex = sex.charAt(0).toLowerCase(); // Assuming 'sex' is 'male' or 'female'
     const query = `
         INSERT INTO [dbo].[User] (Username, Password, Email, Weight, Age, Sex)
-        VALUES ('${username}', '${password}', '${email}', ${weight}, ${age}, '${sex}')
+        VALUES ('${username}', '${password}', '${email}', ${weight}, ${age}, '${truncatedSex}');
+        SELECT SCOPE_IDENTITY() AS UserID; -- Return the ID of the newly inserted user
     `;
     sql.query(query)
-        .then(result => res.json({ message: 'User created successfully' }))
+        .then(result => {
+            const userId = result.recordset[0].UserID; // Extract the ID of the newly inserted user
+            res.json({ userId }); // Return the ID in the response
+        })
         .catch(err => res.status(500).json({ error: err.message }));
 });
+
 
 // Read User
 app.get('/api/users/:userId', (req, res) => {
@@ -50,9 +58,11 @@ app.get('/api/users/:userId', (req, res) => {
 app.put('/api/users/:userId', (req, res) => {
     const userId = req.params.userId;
     const { username, password, email, weight, age, sex } = req.body;
+    // Truncate sex to a single character
+    const truncatedSex = sex.charAt(0).toLowerCase(); // Assuming 'sex' is 'male' or 'female'
     const query = `
         UPDATE [dbo].[User]
-        SET Username = '${username}', Password = '${password}', Email = '${email}', Weight = ${weight}, Age = ${age}, Sex = '${sex}'
+        SET Username = '${username}', Password = '${password}', Email = '${email}', Weight = ${weight}, Age = ${age}, Sex = '${truncatedSex}'
         WHERE UserID = ${userId}
     `;
     sql.query(query)
