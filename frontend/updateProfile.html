@@ -91,6 +91,7 @@
           <div class="dropdown-content">
             <a href="meal_tracker.html">Meal Tracker</a>
             <a href="IngredientTracker.html">Ingredient Tracker</a>
+            <a href="activityTracker.html">Activity Tracker</a>
           </div>
         </div>
         <a href="DailyNutri.html">Daily Nutri</a>
@@ -105,30 +106,60 @@
         <form id="edit-profile-form" style="padding-top: 25px">
           <div class="form-group">
             <label for="fullname">Full Name</label>
-            <input type="text" id="fullname" name="fullname" required />
+            <input
+              type="text"
+              id="fullname"
+              name="fullname"
+              required
+              autocomplete="off"
+            />
           </div>
           <div class="form-group">
             <label for="email">Email</label>
-            <input type="email" id="email" name="email" required />
+            <input
+              type="email"
+              id="email"
+              name="email"
+              required
+              autocomplete="off"
+            />
           </div>
           <div class="form-group">
             <label for="age">Age</label>
-            <input type="number" id="age" name="age" required />
+            <input
+              type="number"
+              id="age"
+              name="age"
+              required
+              autocomplete="off"
+            />
           </div>
           <div class="form-group">
             <label for="weight">Weight</label>
-            <input type="number" id="weight" name="weight" required />
+            <input
+              type="number"
+              id="weight"
+              name="weight"
+              required
+              autocomplete="off"
+            />
           </div>
           <div class="form-group">
             <label for="gender">Gender</label>
-            <select id="gender" name="gender" required>
+            <select id="gender" name="gender" required autocomplete="off">
               <option value="male">Male</option>
               <option value="female">Female</option>
             </select>
           </div>
           <div class="form-group">
             <label for="password">Password</label>
-            <input type="password" id="password" name="password" required />
+            <input
+              type="password"
+              id="password"
+              name="password"
+              required
+              autocomplete="off"
+            />
           </div>
           <div class="form-group">
             <button type="submit">Save Changes</button>
@@ -146,86 +177,130 @@
     <script>
       document.getElementById("logout").addEventListener("click", function () {
         localStorage.setItem("loggedIn", "false");
+        localStorage.setItem("loggedInUserId", "");
         window.location.href = "./login.html";
       });
+    </script>
 
-      // Retrieve user data from local storage
-      const userData = JSON.parse(localStorage.getItem("userData"));
-
-      // Retrieve logged in user ID from local storage
-      const loggedInUserId = localStorage.getItem("loggedInUserId");
-      console.log(userData);
-      console.log(loggedInUserId);
-
-      // Find the logged in user by ID
-      const loggedInUser = userData.find((user) => user.id === loggedInUserId);
-
-      console.log(loggedInUser);
-
-      // Populate the form fields with the user's information
-      document.getElementById("fullname").value = loggedInUser.fullName || "";
-      document.getElementById("email").value = loggedInUser.email || "";
-      document.getElementById("age").value = loggedInUser.age || "";
-      document.getElementById("gender").value = loggedInUser.gender || "";
-      document.getElementById("password").value = loggedInUser.password || "";
-      document.getElementById("weight").value = loggedInUser.weight || "";
-      console.log(loggedInUser);
-
-      function deleteProfile() {
-        // Show confirmation dialog
-        const confirmation = confirm(
-          "Are you sure you want to delete your profile?"
-        );
-
-        // If user confirms deletion
-        if (confirmation) {
-          const loggedInUserIndex = userData.findIndex(
-            (user) => user.id === loggedInUserId
-          );
-          // Check if user was found
-          if (loggedInUserIndex !== -1) {
-            // Remove user from userData array
-            userData.splice(loggedInUserIndex, 1);
-
-            // Update the user data in the local storage
-            localStorage.setItem("userData", JSON.stringify(userData));
-          }
-
-          // Remove user info from local storage
-          localStorage.removeItem("loggedInUserId");
-          localStorage.removeItem("loggedIn");
-
-          // Redirect to login page
-          window.location.href = "./login.html";
-        }
+    <script>
+      const isLoggedIn = localStorage.getItem("loggedIn");
+      if (isLoggedIn !== "true") {
+        window.location.href = "./login.html"; // Redirect to login page
       }
-      // Add event listener to the delete profile button
-      document
-        .getElementById("delete-profile")
-        .addEventListener("click", deleteProfile);
+      // Function to fetch user details
+      function getUserDetails() {
+        const loggedInUserId = localStorage.getItem("loggedInUserId");
+
+        // Fetch user details using the backend endpoint
+        fetch(`http://localhost:3000/api/users/${loggedInUserId}`)
+          .then((response) => {
+            if (response.ok) {
+              return response.json();
+            } else {
+              throw new Error("Failed to fetch user details");
+            }
+          })
+          .then((userData) => {
+            // Populate the form fields with user details
+            document.getElementById("fullname").value = userData.Username || "";
+            document.getElementById("email").value = userData.Email || "";
+            document.getElementById("age").value = userData.Age || "";
+            // Set gender field based on user's sex
+            if (userData.Sex === "m") {
+              document.getElementById("gender").value = "male";
+            } else if (userData.Sex === "f") {
+              document.getElementById("gender").value = "female";
+            } else {
+              // If sex data is neither "m" nor "f", leave gender field empty
+              document.getElementById("gender").value = "";
+            }
+            document.getElementById("password").value = userData.Password || "";
+            document.getElementById("weight").value = userData.Weight || "";
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            alert("Failed to fetch user details");
+          });
+      }
+
+      // Function to update user profile
+      function updateProfile() {
+        const loggedInUserId = localStorage.getItem("loggedInUserId");
+        const editProfileForm = document.getElementById("edit-profile-form");
+
+        // Create user object with form data
+        const updatedUser = {
+          username: editProfileForm.querySelector("#fullname").value.trim(),
+          password: editProfileForm.querySelector("#password").value.trim(),
+          email: editProfileForm.querySelector("#email").value.trim(),
+          age: editProfileForm.querySelector("#age").value.trim(),
+          sex: editProfileForm.querySelector("#gender").value,
+          weight: editProfileForm.querySelector("#weight").value.trim(),
+        };
+
+        // Send updated user information to the backend endpoint
+        fetch(`http://localhost:3000/api/users/${loggedInUserId}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updatedUser),
+        })
+          .then((response) => {
+            if (response.ok) {
+              // Redirect or perform any other necessary action
+              alert("Profile Updated");
+              window.location.href = "index.html";
+            } else {
+              throw new Error("Failed to update profile");
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            alert("Failed to update profile");
+          });
+      }
+
+      // Function to delete user profile
+      function deleteProfile() {
+        const loggedInUserId = localStorage.getItem("loggedInUserId");
+
+        // Send DELETE request to delete user profile
+        fetch(`http://localhost:3000/api/users/${loggedInUserId}`, {
+          method: "DELETE",
+        })
+          .then((response) => {
+            if (response.ok) {
+              // Set loggedIn to false and loggedInUserId to empty string
+              localStorage.setItem("loggedIn", "false");
+              localStorage.setItem("loggedInUserId", "");
+              // Redirect to login page
+              window.location.href = "./login.html";
+            } else {
+              throw new Error("Failed to delete profile");
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            alert("Failed to delete profile");
+          });
+      }
+
+      // Fetch user details when the page loads
+      document.addEventListener("DOMContentLoaded", getUserDetails);
 
       // Add event listener to the edit profile form
       document
         .getElementById("edit-profile-form")
         .addEventListener("submit", function (event) {
           event.preventDefault();
-
-          // Update user information with the values from the form
-          loggedInUser.fullName = document.getElementById("fullname").value;
-          loggedInUser.email = document.getElementById("email").value;
-          loggedInUser.age = document.getElementById("age").value;
-          loggedInUser.gender = document.getElementById("gender").value;
-          loggedInUser.password = document.getElementById("password").value;
-          loggedInUser.weight = document.getElementById("weight").value;
-
-          // Update the user data in the local storage
-          localStorage.setItem("userData", JSON.stringify(userData));
-
-          // Redirect or perform any other necessary action
-          // For example, redirect to index.html
-          alert("Profile Updated");
-          window.location.href = "index.html";
+          updateProfile();
         });
+
+      // Add event listener to the delete profile button
+      document
+        .getElementById("delete-profile")
+        .addEventListener("click", deleteProfile);
     </script>
   </body>
 </html>

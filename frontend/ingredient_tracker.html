@@ -24,6 +24,7 @@
         <a href="meal_tracker.html" class="active">Meal Tracker</a>
         <a href="DailyNutri.html">Daily Nutri</a>
         <a href="IngredientTracker.html">Ingredient Tracker</a>
+        <a href="activityTracker.html">Activity Tracker</a>
         <a href="#" id="logout">Logout</a>
         <a href="#" id="update">Edit Profile</a>
       </div>
@@ -64,6 +65,7 @@
     <script>
       document.getElementById("logout").addEventListener("click", function () {
         localStorage.setItem("loggedIn", "false");
+        localStorage.setItem("loggedInUserId", "");
         window.location.href = "./login.html";
       });
     </script>

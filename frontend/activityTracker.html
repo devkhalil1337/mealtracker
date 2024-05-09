@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Activity Tracker</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+
+  <body>
+    <div class="navbar">
+      <div class="navbar-logo-container">
+        <img
+          src="images/logo.png"
+          alt="NutriTracker Logo"
+          class="navbar-logo"
+        />
+      </div>
+      <div class="navbar-links">
+        <a href="meal_creator.html">Meal Creator</a>
+        <div class="dropdown">
+          <button class="dropbtn active">Tracker</button>
+          <div class="dropdown-content">
+            <a href="meal_tracker.html">Meal Tracker</a>
+            <a href="IngredientTracker.html">Ingredient Tracker</a>
+            <a href="activityTracker.html" class="active">Activity Tracker</a>
+          </div>
+        </div>
+        <a href="DailyNutri.html">Daily Nutri</a>
+        <a href="#" id="logout">Logout</a>
+        <a href="#" id="update">Edit Profile</a>
+      </div>
+    </div>
+
+    <div class="tracker-container">
+      <h2>Activity Tracker</h2>
+      <form id="trackMealForm">
+        <label for="activitySelect">Select Activity:</label>
+        <select id="activitySelect" name="activity" required>
+          <!-- Populate options with activity names and calorie values -->
+          <option value="Regular Walk/215">Regular Walk</option>
+          <option value="Walk down the stairs/1079">
+            Walk down the stairs
+          </option>
+          <option value="Walk up the stairs/281">Walk up the stairs</option>
+          <!-- Add other options similarly -->
+        </select>
+        <label for="Time">Time of Activity:</label>
+        <input type="time" id="Time" name="Time" required />
+
+        <label for="activityDate">Date of Activity:</label>
+        <input
+          type="date"
+          class="activityDate"
+          id="activityDate"
+          name="activityDate"
+          required
+        />
+
+        <button type="button" id="registerActivityButton">
+          Register Activity
+        </button>
+      </form>
+
+      <div class="intake-records" id="activityRecords">
+        <h3>Your Activity Records</h3>
+      </div>
+    </div>
+
+    <script>
+      const userData = JSON.parse(localStorage.getItem("userData"));
+      const loggedInUserId = localStorage.getItem("loggedInUserId");
+      const loggedInUser = userData.find((user) => user.id === loggedInUserId);
+
+      // Register activity function
+      document
+        .getElementById("registerActivityButton")
+        .addEventListener("click", function () {
+          const activitySelect = document.getElementById("activitySelect");
+          const selectedActivity = activitySelect.value;
+          const time = document.getElementById("Time").value;
+          const date = document.getElementById("activityDate").value;
+
+          if (selectedActivity && time && date) {
+            // Split the selected value to get activity name and calories
+            const [activityName, calories] = selectedActivity.split("/");
+
+            // Construct the activity record
+            const activityRecord = {
+              name: activityName,
+              time: time,
+              date: date,
+              caloriesBurned: parseInt(calories), // Parse calories as integer
+            };
+
+            // Display the activity record
+            displayActivityRecord(activityRecord);
+
+            // Save the activity record to localStorage
+            const activityRecords =
+              JSON.parse(localStorage.getItem("activityRecords")) || [];
+            activityRecords.push(activityRecord);
+            localStorage.setItem(
+              "activityRecords",
+              JSON.stringify(activityRecords)
+            );
+          } else {
+            alert("Please fill out all required fields.");
+          }
+        });
+
+      function displayActivityRecord(activityRecord) {
+        const activityRecordsDiv = document.getElementById("activityRecords");
+        const recordElement = document.createElement("div");
+        recordElement.innerHTML = `<div class="record">
+    <span> ${activityRecord.date} - ${activityRecord.name} at ${activityRecord.time} , ${activityRecord.caloriesBurned} kcal</span>
+    <button class="delete">Delete</button>
+  </div>`;
+        activityRecordsDiv.appendChild(recordElement);
+
+        // Add event listener to delete button if there are activity records
+        const deleteButton = recordElement.querySelector(".delete");
+        if (deleteButton) {
+          deleteButton.addEventListener("click", function () {
+            recordElement.remove(); // Remove the activity record from UI
+
+            // Remove the activity record from localStorage
+            const activityRecords =
+              JSON.parse(localStorage.getItem("activityRecords")) || [];
+            const updatedRecords = activityRecords.filter(
+              (record) =>
+                !(
+                  record.name === activityRecord.name &&
+                  record.time === activityRecord.time &&
+                  record.date === activityRecord.date &&
+                  record.caloriesBurned === activityRecord.caloriesBurned
+                )
+            );
+            localStorage.setItem(
+              "activityRecords",
+              JSON.stringify(updatedRecords)
+            );
+          });
+        }
+      }
+      // Load and display previously saved activity records from localStorage
+      document.addEventListener("DOMContentLoaded", function () {
+        const activityRecords =
+          JSON.parse(localStorage.getItem("activityRecords")) || [];
+        activityRecords.forEach(displayActivityRecord);
+      });
+
+      // Logout functionality
+      document.getElementById("logout").addEventListener("click", function () {
+        localStorage.setItem("loggedIn", "false");
+        window.location.href = "./login.html";
+      });
+
+      // Redirect to login page if not logged in
+      const isLoggedIn = localStorage.getItem("loggedIn");
+      if (isLoggedIn !== "true") {
+        window.location.href = "./login.html";
+      }
+    </script>
+  </body>
+</html>

@@ -24,6 +24,7 @@ app.post('/api/users', (req, res) => {
     const { username, password, email, weight, age, sex } = req.body;
     // Truncate sex to a single character
     const truncatedSex = sex.charAt(0).toLowerCase(); // Assuming 'sex' is 'male' or 'female'
+
     const query = `
         INSERT INTO [dbo].[User] (Username, Password, Email, Weight, Age, Sex)
         VALUES ('${username}', '${password}', '${email}', ${weight}, ${age}, '${truncatedSex}');
