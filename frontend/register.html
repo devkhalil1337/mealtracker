@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login & Signup Page</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        background-color: #f5f5f5;
+      }
+
+      .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+
+      .card {
+        width: 350px;
+        padding: 20px;
+        border-radius: 10px;
+        background-color: #fff;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 5px;
+      }
+
+      .form-group input {
+        width: 100%;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+
+      .form-group select {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+
+      .form-group button {
+        width: 100%;
+        padding: 10px;
+        background-color: #91c789;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      .form-group a {
+        display: block;
+        margin-top: 10px;
+        text-align: center;
+        text-decoration: none;
+        color: #333;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="card">
+        <h2>Signup</h2>
+        <form id="signup-form">
+          <div class="form-group">
+            <label for="fullname">Full Name</label>
+            <input type="text" id="fullname" name="fullname" required />
+          </div>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required />
+          </div>
+          <div class="form-group">
+            <label for="age">Age</label>
+            <input type="number" id="age" name="age" required />
+          </div>
+          <div class="form-group">
+            <label for="weight">Weight</label>
+            <input type="number" id="weight" name="weight" required />
+          </div>
+          <div class="form-group">
+            <label for="gender">Gender</label>
+            <select id="gender" name="gender" required>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required />
+          </div>
+          <div class="form-group">
+            <button type="submit">Signup</button>
+          </div>
+        </form>
+        <div class="form-group">
+          <a href="./login.html">Already have an account? Login here</a>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const isLoggedIn = localStorage.getItem("loggedIn");
+
+      if (isLoggedIn === "true") {
+        // Redirect to index.html if already logged in
+        window.location.href = "index.html";
+      }
+
+      const signupForm = document.getElementById("signup-form");
+
+      signupForm.addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        // Retrieve form values
+        const fullName = document.getElementById("fullname").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const age = document.getElementById("age").value.trim();
+        const gender = document.getElementById("gender").value;
+        const password = document.getElementById("password").value.trim();
+        const weight = document.getElementById("weight").value.trim();
+
+        // Validate name and password fields
+        if (fullName === "" || password === "" || email === "") {
+          alert("Please type values for Name, Email and Password fields.");
+          return; // Stop form submission if fields are empty
+        }
+
+        // Retrieve existing user data from local storage or initialize an empty array
+        let userData = JSON.parse(localStorage.getItem("userData")) || [];
+        const userId = generateUniqueId();
+
+        // Create new user object
+        const newUser = {
+          id: userId,
+          fullName,
+          email,
+          age,
+          gender,
+          password,
+          weight,
+        };
+
+        // Add new user to user data array
+        userData.push(newUser);
+
+        // Save updated user data array to local storage
+        localStorage.setItem("userData", JSON.stringify(userData));
+        localStorage.setItem("loggedIn", "true");
+        localStorage.setItem("loggedInUserId", userId);
+
+        // Alert and redirect
+
+        window.location.href = "index.html";
+      });
+
+      // Function to generate a random ID
+      function generateUniqueId() {
+        return "user_" + Math.random().toString(36).substr(2, 9);
+      }
+    </script>
+  </body>
+</html>

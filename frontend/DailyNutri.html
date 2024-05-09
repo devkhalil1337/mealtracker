@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Daily</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+
+  <body>
+    <div class="navbar">
+      <div class="navbar-logo-container">
+        <img
+          src="images/logo.png"
+          alt="NutriTracker Logo"
+          class="navbar-logo"
+        />
+      </div>
+      <div class="navbar-links">
+        <a href="meal_creator.html">Meal Creator</a>
+        <div class="dropdown">
+          <button class="dropbtn">Tracker</button>
+          <div class="dropdown-content">
+            <a href="meal_tracker.html">Meal Tracker</a>
+            <a href="IngredientTracker.html">Ingredient Tracker</a>
+          </div>
+        </div>
+        <a href="DailyNutri.html" class="active">Daily Nutri</a>
+        <a href="#" id="logout">Logout</a>
+        <a href="#" id="update">Edit Profile</a>
+      </div>
+    </div>
+
+    <div id="nutrition-report-container" class="meal-column"></div>
+
+    <script src="DailyNutri.js"></script>
+    <script>
+      document.getElementById("logout").addEventListener("click", function () {
+        localStorage.setItem("loggedIn", "false");
+        window.location.href = "./login.html";
+      });
+      document.getElementById("update").addEventListener("click", function () {
+        window.location.href = "./updateProfile.html";
+      });
+
+      const isLoggedIn = localStorage.getItem("loggedIn");
+      if (isLoggedIn !== "true") {
+        window.location.href = "./login.html"; // Redirect to login page
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,518 @@
+/* Default styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary-color: #f0e3e3;
+    /* Erstat med den nøjagtige baggrundsfarve fra dit design */
+    --secondary-color: #ff6f61;
+    /* Erstat med den nøjagtige farve for tabelcellerne fra dit design */
+    --text-color: #333;
+    /* Mørkegrå tekstfarve for læsbarhed */
+    --accent-color: #f70404;
+    /* Accentfarve brugt i navigationen */
+}
+
+body {
+    font-family: 'Nunito', sans-serif;
+    background-color: var(--primary-color);
+    color: var(--text-color);
+}
+
+/* Nav-bar styles */
+.navbar {
+    background-color: var(--accent-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Center navbar content */
+    position: relative;
+    z-index: 10;
+    height: 100px;
+    /* Increased height of the navbar */
+}
+
+.navbar-logo-container {
+    position: absolute;
+    left: 20px;
+    /* Adjust as needed */
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.navbar-logo {
+    height: 60px;
+    /* Adjust the size as needed */
+}
+
+.navbar-links {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+    /* Allow the links to grow and use available space */
+    padding-left: 120px;
+    /* Adjust as needed, should be at least the width of the logo container */
+}
+
+.navbar a {
+    color: white;
+    text-align: center;
+    padding: 14px 20px;
+    text-decoration: none;
+    display: block;
+}
+
+.navbar a.active {
+    background-color: #91c789;
+}
+
+/* Other styles remain the same */
+
+
+/* D-d-d-d-dashboard*/
+.category-label {
+    background-color: var(--secondary-color);
+    /* Adjust the color to match your design */
+    color: white;
+    border-radius: 10px 10px 0 0;
+    /* Top rounded corners */
+    padding: 10px;
+    font-weight: bold;
+    position: relative;
+    top: -10px;
+    /* Half inside the container */
+    text-align: center;
+}
+
+/* Update .container styles */
+.container {
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+    /* Add margin to accommodate the category label */
+    position: relative;
+    /* For the category label positioning */
+}
+
+/* Update dashboard data styles */
+.container h2 {
+    color: #91c789;
+    /* Update color to match the pretty green from the design */
+    font-size: 2.5em;
+    /* Adjust size as needed */
+    text-align: center;
+    /* Center the text */
+    font-weight: bold;
+    margin-bottom: 0.25em;
+    /* Reduce bottom margin */
+}
+
+.container p {
+    text-align: center;
+    /* Center the text */
+    color: #555;
+    /* Slightly darker color for the description */
+}
+
+/* Adjust the grid gap to have more space */
+.dashboard {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 40px;
+    /* Increase gap for spacing */
+    padding: 20px;
+}
+
+/* Meal creator*/
+
+.meal-overview-container {
+    padding: 20px;
+    background-color: #ffffff;
+    /* Assuming a white background as in the screenshot */
+    border-radius: 10px;
+    /* Rounded corners */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    /* Light shadow for depth */
+    margin: 20px;
+    /* Add margin for spacing */
+}
+
+.meal-overview-container h1 {
+    text-align: center;
+    /* Center the title */
+    color: #333;
+    /* Dark text for better readability */
+    margin-bottom: 20px;
+    /* Space before the button */
+}
+
+/* Style the button to match the screenshot */
+#createMealButton {
+    display: block;
+    /* Center the button */
+    width: max-content;
+    /* Auto-width based on content */
+    margin: 0 auto 20px;
+    /* Centering the button and adding margin */
+    padding: 10px 20px;
+    /* Padding for a larger click area */
+    background-color: #91c789;
+    /* Match the button color from the screenshot */
+    color: white;
+    /* Text color */
+    border: none;
+    /* No border */
+    border-radius: 5px;
+    /* Rounded corners */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    /* Subtle shadow */
+    cursor: pointer;
+    /* Pointer cursor on hover */
+    text-decoration: none;
+    /* Remove underline from links */
+}
+
+#createMealButton:hover {
+    background-color: #6a9955;
+    /* Darker color on hover */
+}
+
+/* Table styles to match the screenshot */
+.meal-table {
+    width: 100%;
+    /* Full width */
+    border-collapse: collapse;
+    /* Remove space between cells */
+    margin-bottom: 20px;
+    /* Space after the table */
+}
+
+.meal-table th,
+.meal-table td {
+    text-align: left;
+    /* Align text to the left */
+    padding: 10px;
+    /* Spacing within cells */
+    border-bottom: 1px solid #e7e7e7;
+    /* Light border for the bottom of each cell */
+}
+
+.meal-table th {
+    background-color: var(--accent-color);
+    /* Light green background for headers */
+    color: #333;
+    /* Dark text for readability */
+}
+
+.meal-table tr:nth-child(odd) {
+    background-color: #f4f4f4;
+    /* Zebra striping for rows */
+}
+
+.meal-table tr:hover {
+    background-color: #e7f2d9;
+    /* Hover color for rows */
+}
+
+.remove-button {
+    padding: 5px 10px;
+    background-color: #ff6347;
+    /* A red color */
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    /* Optional: Adds a slight shadow for depth */
+    transition: background-color 0.3s;
+    /* Smooth transition for hover effect */
+}
+
+.remove-button:hover {
+    background-color: #e53e3e;
+    /* A darker red for the hover state */
+}
+
+/* Style the meal creation container similar to the meal overview container */
+.meal-creation-container {
+    padding: 20px;
+    background-color: #ffffff;
+    /* Assuming a white background */
+    border-radius: 10px;
+    /* Rounded corners */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    /* Light shadow for depth */
+    margin: 20px;
+    /* Add margin for spacing */
+    max-width: 800px;
+    /* Set a max-width for the form container */
+    margin-left: auto;
+    /* Center the container */
+    margin-right: auto;
+}
+
+.meal-creation-container h1 {
+    text-align: center;
+    /* Center the title */
+    color: #333;
+    /* Dark text for better readability */
+    margin-bottom: 20px;
+    /* Space before the button */
+}
+
+/* Style the form elements */
+#mealCreationForm {
+    display: grid;
+    gap: 20px;
+    /* Space between form rows */
+}
+
+.form-row {
+    display: flex;
+    flex-direction: column;
+    /* Stack label and input */
+    margin-bottom: 10px;
+    /* Space between form rows */
+}
+
+.form-row label {
+    font-weight: bold;
+    /* Make label text bold */
+    margin-bottom: 5px;
+    /* Space between label and input */
+}
+
+.form-row input[type="text"] {
+    padding: 10px;
+    border: 1px solid #ddd;
+    /* Light border for the inputs */
+    border-radius: 5px;
+    /* Rounded corners for the inputs */
+}
+
+/* Style the ingredient list similar to the meal overview */
+.ingredient-list {
+    background-color: #f4f4f4;
+    /* Light background for the ingredient list */
+    padding: 20px;
+    border-radius: 10px;
+    /* Rounded corners */
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+    /* Inner shadow for depth */
+    margin-bottom: 20px;
+    /* Space after the ingredient list */
+}
+
+/* Style the buttons similar to the meal overview */
+#search-button,
+#refresh,
+#saveMealButton {
+    padding: 10px 20px;
+    background-color: #91c789;
+    /* Match the button color from the screenshot */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    /* Rounded corners */
+    cursor: pointer;
+    margin-top: 10px;
+    /* Space above the button */
+}
+
+#search-button:hover,
+#refresh:hover,
+#saveMealButton:hover {
+    background-color: #6a9955;
+    /* Darker shade on hover */
+}
+
+/* Style the list of ingredients */
+#ingredientsList,
+#selected-ingredients {
+    list-style: none;
+    /* Remove default list styling */
+    padding-left: 0;
+    /* Remove default padding */
+}
+
+#ingredientsList li,
+#selected-ingredients li {
+    background-color: #ffffff;
+    /* White background for list items */
+    padding: 5px 10px;
+    margin-bottom: 5px;
+    /* Space between list items */
+    border: 1px solid #ddd;
+    /* Light border for the list items */
+    border-radius: 5px;
+    /* Rounded corners for the list items */
+}
+
+/* General styles for tracker form */
+.tracker-container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.tracker-container h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* Form styles */
+#trackMealForm {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    /* two columns for labels and inputs */
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+#trackMealForm label {
+    display: flex;
+    align-items: center;
+    color: #555;
+}
+
+#trackMealForm input[type="number"],
+#trackMealForm input[type="time"],
+#trackMealForm select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    /* Margin bottom for spacing */
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+#trackMealForm button {
+    padding: 10px 20px;
+    background-color: #91c789;
+    /* Match the button color from the meal overview */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#trackMealForm button:hover {
+    background-color: #6a9955;
+    /* Darker green on hover */
+}
+
+/* Intake records styles */
+.intake-records {
+    margin-top: 20px;
+}
+
+.intake-records h3 {
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.intake-records .record {
+    background-color: #f4f4f4;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.intake-records .record span {
+    flex-grow: 1;
+}
+
+.intake-records .record .edit,
+.intake-records .record .delete {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    margin-left: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.intake-records .record .edit {
+    background-color: #ffa500;
+    /* Orange color for edit */
+    color: white;
+}
+
+.intake-records .record .edit:hover {
+    background-color: #cc8400;
+    /* Darker orange on hover */
+}
+
+.intake-records .record .delete {
+    background-color: #ff6347;
+    /* Red color for delete */
+    color: white;
+}
+
+.intake-records .record .delete:hover {
+    background-color: #e53e3e;
+    /* Darker red on hover */
+}
+
+/* Styles for the Report Container */
+.report-container {
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    /* Adjusted for rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
+    /* Allows table to scroll on small screens */
+}
+
+.report-container h2 {
+    margin-bottom: 30px;
+    /* More space below the header */
+    text-align: center;
+    font-size: 2em;
+    /* Larger font size for the title */
+    color: #333;
+}
+
+/* Table styles */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    /* Collapse borders for a clean look */
+    margin-bottom: 20px;
+    /* Spacing after the table */
+}
+
+table th,
+table td {
+    text-align: left;
+    padding: 12px 15px;
+    /* Comfortable spacing for content */
+    border-bottom: 1px solid #e7e7e7;
+    /* Subtle border for rows */
+}
+
+table th {
+    background-color: var(--accent-color);
+    /* Light green background for headers to match the design */
+    color: #333;
+    /* Dark text for header for contrast */
+    font-weight: bold;
+}

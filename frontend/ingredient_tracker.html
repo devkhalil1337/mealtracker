@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ingredient Tracker</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="navbar">
+      <div class="navbar-logo-container">
+        <img
+          src="images/logo.png"
+          alt="NutriTracker Logo"
+          class="navbar-logo"
+        />
+      </div>
+      <div class="navbar-links">
+        <a href="meal_creator.html">Meal Creator</a>
+        <a href="meal_tracker.html" class="active">Meal Tracker</a>
+        <a href="DailyNutri.html">Daily Nutri</a>
+        <a href="IngredientTracker.html">Ingredient Tracker</a>
+        <a href="#" id="logout">Logout</a>
+        <a href="#" id="update">Edit Profile</a>
+      </div>
+    </div>
+
+    <div class="tracker-container">
+      <h2>Ingredient Tracker</h2>
+      <form id="trackIngredientForm">
+        <div class="ingredient-list">
+          <input
+            type="text"
+            id="search-box"
+            placeholder="Search Ingredients..."
+          />
+          <button id="search-button">Search</button>
+          <h2>Ingredients:</h2>
+          <ul id="ingredientsList"></ul>
+          <button id="refresh">Refresh Ingredients</button>
+          <h2>Selected ingredients for this intake:</h2>
+          <ul id="selected-ingredients"></ul>
+        </div>
+
+        <label for="mealWeight">Weight of Ingredient (grams):</label>
+        <input type="number" id="mealWeight" name="mealWeight" required />
+
+        <button type="button" id="saveIntakeButton">Save Intake</button>
+      </form>
+
+      <div class="intake-records">
+        <h3>Your Intake Records</h3>
+      </div>
+    </div>
+
+    <div id="demo"></div>
+    <!-- This is the element where the location data will be displayed -->
+
+    <script src="IngredientTracker.js"></script>
+    <script>
+      document.getElementById("logout").addEventListener("click", function () {
+        localStorage.setItem("loggedIn", "false");
+        window.location.href = "./login.html";
+      });
+    </script>
+    <script>
+      const isLoggedIn = localStorage.getItem("loggedIn");
+      if (isLoggedIn !== "true") {
+        window.location.href = "./login.html"; // Redirect to login page
+      }
+      document.addEventListener("DOMContentLoaded", getLocation);
+      document.getElementById("update").addEventListener("click", function () {
+        window.location.href = "./updateProfile.html";
+      });
+
+      function getLocation() {
+        const x = document.getElementById("demo");
+
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(showPosition);
+        } else {
+          x.innerHTML = "Geolocation is not supported by this browser.";
+        }
+      }
+
+      function showPosition(position) {
+        const x = document.getElementById("demo");
+        x.innerHTML =
+          "Latitude: " +
+          position.coords.latitude +
+          "<br>Longitude: " +
+          position.coords.longitude;
+      }
+    </script>
+  </body>
+</html>
