@@ -1,231 +1,316 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Activity Tracker</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Activity Tracker</title>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css" />
-</head>
-
-<body>
-  <div class="navbar">
-    <div class="navbar-logo-container">
-      <img src="images/logo.png" alt="NutriTracker Logo" class="navbar-logo" />
-    </div>
-    <div class="navbar-links">
-      <a href="meal_creator.html">Meal Creator</a>
-      <div class="dropdown">
-        <button class="dropbtn active">Tracker</button>
-        <div class="dropdown-content">
-          <a href="meal_tracker.html">Meal Tracker</a>
-          <a href="IngredientTracker.html">Ingredient Tracker</a>
-          <a href="activityTracker.html" class="active">Activity Tracker</a>
-        </div>
+  <body>
+    <div class="navbar">
+      <div class="navbar-logo-container">
+        <img
+          src="images/logo.png"
+          alt="NutriTracker Logo"
+          class="navbar-logo"
+        />
       </div>
-      <a href="DailyNutri.html">Daily Nutri</a>
-      <a href="#" id="logout">Logout</a>
-      <a href="#" id="update">Edit Profile</a>
+      <div class="navbar-links">
+        <a href="meal_creator.html">Meal Creator</a>
+        <div class="dropdown">
+          <button class="dropbtn active">Tracker</button>
+          <div class="dropdown-content">
+            <a href="meal_tracker.html">Meal Tracker</a>
+            <a href="IngredientTracker.html">Ingredient Tracker</a>
+            <a href="activityTracker.html" class="active">Activity Tracker</a>
+          </div>
+        </div>
+        <a href="DailyNutri.html">Daily Nutri</a>
+        <a href="#" id="logout">Logout</a>
+        <a href="#" id="update">Edit Profile</a>
+      </div>
     </div>
-  </div>
 
-  <div class="tracker-container">
-    <h2>Activity Tracker</h2>
-    <form id="trackMealForm">
-      <label for="activitySelect">Select Activity:</label>
-      <select id="activitySelect" name="activity" required>
-        <!-- Populate options with activity names and calorie values -->
-        <option value="Regular Walk/215">Regular Walk</option>
-        <option value="Walk down the stairs/1079">
-          Walk down the stairs
-        </option>
-        <option value="Walk up the stairs/281">Walk up the stairs</option>
-        <!-- Add other options similarly -->
-      </select>
-      <label for="Time">Time of Activity:</label>
-      <input type="time" id="Time" name="Time" required />
+    <div class="tracker-container">
+      <h2>Activity Tracker</h2>
+      <form id="trackMealForm">
+        <label for="activitySelect">Select Activity:</label>
+        <select id="activitySelect" name="activity" required>
+          <option value="Regular Walk/215">Regular Walk</option>
+          <option value="Walk down the stairs/1079">
+            Walk down the stairs
+          </option>
+          <option value="Walk up the stairs/281">Walk up the stairs</option>
+          <option value="Mow grass with a manual lawnmower/281">
+            Mow grass with a manual lawnmower
+          </option>
+          <option value="Cook and make beds/362">Cook and make beds</option>
+          <option value="Weeding/481">Weeding</option>
+          <option value="Clear snow/74">Clear snow</option>
+          <option value="Read or watch TV/89">Read or watch TV</option>
+          <option value="Stand up straight/310">Stand up straight</option>
+          <option value="Cycling at a leisurely pace/163">
+            Cycling at a leisurely pace
+          </option>
+          <option value="Wipe off dust/281">Wipe off dust</option>
+          <option value="Wash floor/259">Wash floor</option>
+          <option value="Cleaning windows/814">Cleaning windows</option>
+          <option value="Cardio/348">Cardio</option>
+          <option value="Hard strength training/318">
+            Hard strength training
+          </option>
+          <option value="Badminton/318">Badminton</option>
+          <option value="Volleyball/236">Volleyball</option>
+          <option value="Ping pong/355">Ping pong</option>
+          <option value="Dance at high tempo/259">Dance at high tempo</option>
+          <option value="Dance at a moderate pace/510">
+            Dance at a moderate pace
+          </option>
+          <option value="Soccer/384">Soccer</option>
+          <option value="Quick walk/244">Quick walk</option>
+          <option value="Golf/466">Golf</option>
+          <option value="Handball/466">Handball</option>
+          <option value="Squash/666">Squash</option>
+          <option value="Jogging/405">Jogging</option>
+          <option value="Cross-country skiing/872">Cross-country skiing</option>
+          <option value="Run at a moderate pace/1213">
+            Run at a moderate pace
+          </option>
+          <option value="Run at a fast pace/414">Run at a fast pace</option>
+          <option value="Riding/414">Riding</option>
+          <option value="Ice skating/273">Ice skating</option>
+          <option value="Swimming/296">Swimming</option>
+          <option value="Cycling at high speed/658">
+            Cycling at high speed
+          </option>
+          <option value="Car repair/259">Car repair</option>
+          <option value="Excavation work/414">Excavation work</option>
+          <option value="Agricultural work/236">Agricultural work</option>
+          <option value="Light office work/185">Light office work</option>
+          <option value="Paint house/215">Paint house</option>
+          <option value="Masonry work/207">Masonry work</option>
+          <option value="Chopping and hauling firewood/1168">
+            Chopping and hauling firewood
+          </option>
+        </select>
+        <label for="Time">Time of Activity:</label>
+        <input type="time" id="Time" name="Time" required />
 
-      <label for="activityDate">Date of Activity:</label>
-      <input type="date" class="activityDate" id="activityDate" name="activityDate" required />
+        <label for="activityDate">Date of Activity:</label>
+        <input
+          type="date"
+          class="activityDate"
+          id="activityDate"
+          name="activityDate"
+          required
+        />
 
-      <button type="button" id="registerActivityButton">
-        Register Activity
-      </button>
-    </form>
+        <button type="button" id="registerActivityButton">
+          Register Activity
+        </button>
+      </form>
 
-    <div class="intake-records" id="activityRecords">
-      <h3>Your Activity Records</h3>
+      <div class="intake-records" id="activityRecords">
+        <h3>Your Activity Records</h3>
+      </div>
     </div>
-  </div>
 
-  <script>
-    const userData = JSON.parse(localStorage.getItem("userData"));
-    const loggedInUserId = localStorage.getItem("loggedInUserId");
-    const loggedInUser = userData?.find((user) => user.id === loggedInUserId);
+    <script>
+      const userData = JSON.parse(localStorage.getItem("userData"));
+      const loggedInUserId = localStorage.getItem("loggedInUserId");
+      const loggedInUser = userData?.find((user) => user.id === loggedInUserId);
 
-    // Register activity function
-    document
-      .getElementById("registerActivityButton")
-      .addEventListener("click", function () {
-        const activitySelect = document.getElementById("activitySelect");
-        const selectedActivity = activitySelect.value;
-        const time = document.getElementById("Time").value;
-        const date = document.getElementById("activityDate").value;
+      // Register activity function
+      document
+        .getElementById("registerActivityButton")
+        .addEventListener("click", function () {
+          const activitySelect = document.getElementById("activitySelect");
+          const selectedActivity = activitySelect.value;
+          const time = document.getElementById("Time").value;
+          const date = document.getElementById("activityDate").value;
 
-        if (selectedActivity && time && date) {
-          // Split the selected value to get activity name and calories
-          const [activityName, calories] = selectedActivity.split("/");
+          if (selectedActivity && time && date) {
+            // Split the selected value to get activity name and calories
+            const [activityName, calories] = selectedActivity.split("/");
 
-          const userId = localStorage.getItem("loggedInUserId");
-          // Construct the activity record
-          const activityRecord = {
-            name: activityName,
-            time: time,
-            date: date,
-            Caloriesburned: parseInt(calories), // Parse calories as integer
-            userId: userId
-          };
+            const userId = localStorage.getItem("loggedInUserId");
+            // Construct the activity record
+            const activityRecord = {
+              name: activityName,
+              Time: time,
+              date: date,
+              Caloriesburned: parseInt(calories), // Parse calories as integer
+              userId: userId,
+            };
+            const activityRecord2 = {
+              name: activityName,
+              time: time,
+              date: date,
+              Caloriesburned: parseInt(calories), // Parse calories as integer
+              userId: userId,
+            };
 
-          fetch(`http://localhost:3000/api/activities`, {
-            method: 'POST',
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(activityRecord)
-          })
-            .then(response => {
-              if (!response.ok) {
-                throw new Error('Network response was not ok');
-              }
-              return response.json();
+            fetch(`http://localhost:3000/api/activities`, {
+              method: "POST",
+              headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(activityRecord2),
             })
-            .then(data => {
-              // Display the activity record
-              displayActivityRecord(activityRecord);
+              .then((response) => {
+                if (!response.ok) {
+                  throw new Error("Network response was not ok");
+                }
+                return response.json();
+              })
+              .then((data) => {
+                // Display the activity record
+                displayActivityRecord(activityRecord);
 
-              // Save the activity record to localStorage
-              const activityRecords =
-                JSON.parse(localStorage.getItem("activityRecords")) || [];
-              activityRecords.push(activityRecord);
-              localStorage.setItem(
-                "activityRecords",
-                JSON.stringify(activityRecords)
-              );
-
-            })
-            .catch(error => {
-              console.error('There was a problem with the fetch operation:', error);
-            });
-
-
-        } else {
-          alert("Please fill out all required fields.");
-        }
-      });
-
-    function deleteActivityRecord(id) {
-      fetch(`http://localhost:3000/api/activities/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        }
-      })
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Network response was not ok');
+                // Save the activity record to localStorage
+                const activityRecords =
+                  JSON.parse(localStorage.getItem("activityRecords")) || [];
+                activityRecords.push(activityRecord);
+                localStorage.setItem(
+                  "activityRecords",
+                  JSON.stringify(activityRecords)
+                );
+              })
+              .catch((error) => {
+                console.error(
+                  "There was a problem with the fetch operation:",
+                  error
+                );
+              });
+          } else {
+            alert("Please fill out all required fields.");
           }
-          return response.json();
-        })
-        .then(data => {
-        })
-        .catch(error => {
-          console.error('There was a problem with the deleting opertaion:', error);
         });
-    }
 
-    function displayActivityRecord(activityRecord) {
-      console.log({ activityRecord })
-      const activityRecordsDiv = document.getElementById("activityRecords");
-      const recordElement = document.createElement("div");
-      recordElement.innerHTML = `<div class="record">
+      function deleteActivityRecord(id) {
+        fetch(`http://localhost:3000/api/activities/${id}`, {
+          method: "DELETE",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            return response.json();
+          })
+          .then((data) => {})
+          .catch((error) => {
+            console.error(
+              "There was a problem with the deleting opertaion:",
+              error
+            );
+          });
+      }
+
+      function displayActivityRecord(activityRecord) {
+        console.log({ activityRecord });
+        const activityRecordsDiv = document.getElementById("activityRecords");
+        const recordElement = document.createElement("div");
+        recordElement.innerHTML = `<div class="record">
     <span> ${activityRecord.date} - ${activityRecord.name} at ${activityRecord.Time} , ${activityRecord.Caloriesburned} kcal</span>
     <button class="delete" onclick="deleteActivityRecord('${activityRecord.ActivityID}')">Delete</button>
   </div > `;
-      activityRecordsDiv.appendChild(recordElement);
+        activityRecordsDiv.appendChild(recordElement);
 
-      // Add event listener to delete button if there are activity records
-      const deleteButton = recordElement.querySelector(".delete");
-      if (deleteButton) {
-        deleteButton.addEventListener("click", function () {
-          recordElement.remove(); // Remove the activity record from UI
+        // Add event listener to delete button if there are activity records
+        const deleteButton = recordElement.querySelector(".delete");
+        if (deleteButton) {
+          deleteButton.addEventListener("click", function () {
+            recordElement.remove(); // Remove the activity record from UI
 
-          // Remove the activity record from localStorage
-          const activityRecords =
-            JSON.parse(localStorage.getItem("activityRecords")) || [];
-          const updatedRecords = activityRecords.filter(
-            (record) =>
-              !(
-                record.name === activityRecord.name &&
-                record.time === activityRecord.time &&
-                record.date === activityRecord.date &&
-                record.Caloriesburned === activityRecord.Caloriesburned
-              )
-          );
-          localStorage.setItem(
-            "activityRecords",
-            JSON.stringify(updatedRecords)
-          );
-        });
-      }
-    }
-    // Load and display previously saved activity records from localStorage
-    document.addEventListener("DOMContentLoaded", function () {
-      const activityRecords =
-        JSON.parse(localStorage.getItem("activityRecords")) || [];
-
-      const userId = localStorage.getItem("loggedInUserId");
-
-      fetch(`http://localhost:3000/api/activities/${userId}`, {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
+            // Remove the activity record from localStorage
+            const activityRecords =
+              JSON.parse(localStorage.getItem("activityRecords")) || [];
+            const updatedRecords = activityRecords.filter(
+              (record) =>
+                !(
+                  record.name === activityRecord.name &&
+                  record.time === activityRecord.time &&
+                  record.date === activityRecord.date &&
+                  record.Caloriesburned === activityRecord.Caloriesburned
+                )
+            );
+            localStorage.setItem(
+              "activityRecords",
+              JSON.stringify(updatedRecords)
+            );
+          });
         }
-      })
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Network response was not ok');
-          }
-          return response.json();
+      }
+      // Load and display previously saved activity records from localStorage
+      document.addEventListener("DOMContentLoaded", function () {
+        const activityRecords =
+          JSON.parse(localStorage.getItem("activityRecords")) || [];
+        const userId = localStorage.getItem("loggedInUserId");
+
+        fetch(`http://localhost:3000/api/activities/${userId}`, {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
         })
-        .then(data => {
-          console.log('Activity data:', data);
-          data.forEach(displayActivityRecord);
-        })
-        .catch(error => {
-          console.error('There was a problem with the fetch operation:', error);
-        });
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            data.forEach((activity) => {
+              // Parse and format date
+              const activityDate = new Date(activity.date);
+              const formattedDate = activityDate.toISOString().split("T")[0]; // format as 'YYYY-MM-DD'
 
+              // Parse and format time
+              const activityTime = new Date(activity.Time);
+              const hours = activityTime.getUTCHours();
+              const minutes = activityTime.getUTCMinutes();
+              const formattedHours = hours < 10 ? "0" + hours : hours;
+              const formattedMinutes = minutes < 10 ? "0" + minutes : minutes;
+              const formattedTime = `${formattedHours}:${formattedMinutes}`; // format as 'HH:MM'
 
+              // Modify the date and time properties of the activity object
+              activity.date = formattedDate;
+              activity.Time = formattedTime;
 
+              // Display or process the modified activity record
+              displayActivityRecord(activity);
+            });
+          })
+          .catch((error) => {
+            console.error(
+              "There was a problem with the fetch operation:",
+              error
+            );
+          });
+      });
 
-    });
+      // Logout functionality
+      document.getElementById("logout").addEventListener("click", function () {
+        localStorage.setItem("loggedIn", "false");
+        window.location.href = "./login.html";
+      });
 
-    // Logout functionality
-    document.getElementById("logout").addEventListener("click", function () {
-      localStorage.setItem("loggedIn", "false");
-      window.location.href = "./login.html";
-    });
-
-    // Redirect to login page if not logged in
-    const isLoggedIn = localStorage.getItem("loggedIn");
-    if (isLoggedIn !== "true") {
-      window.location.href = "./login.html";
-    }
-  </script>
-</body>
-
+      // Redirect to login page if not logged in
+      const isLoggedIn = localStorage.getItem("loggedIn");
+      if (isLoggedIn !== "true") {
+        window.location.href = "./login.html";
+      }
+    </script>
+  </body>
 </html>

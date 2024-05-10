@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Basal Metabolic Rate Calculator</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+
+  <body>
+    <div class="navbar">
+      <div class="navbar-logo-container">
+        <img
+          src="images/logo.png"
+          alt="NutriTracker Logo"
+          class="navbar-logo"
+        />
+      </div>
+      <div class="navbar-links">
+        <a href="meal_creator.html">Meal Creator</a>
+        <div class="dropdown">
+          <button class="dropbtn">Tracker</button>
+          <div class="dropdown-content">
+            <a href="meal_tracker.html">Meal Tracker</a>
+            <a href="IngredientTracker.html">Ingredient Tracker</a>
+            <a href="activityTracker.html">Activity Tracker</a>
+          </div>
+        </div>
+        <a href="DailyNutri.html">Daily Nutri</a>
+        <a href="BMR.html" class="active">BMR</a>
+        <a href="#" id="logout">Logout</a>
+        <a href="#" id="update">Edit Profile</a>
+      </div>
+    </div>
+
+    <div class="tracker-container">
+      <h2>Basal Metabolic Rate Calculator</h2>
+      <form id="trackMealForm">
+        <label for="age">Age:</label>
+        <input type="number" id="age" name="age" required />
+
+        <label for="weight">Weight (kg):</label>
+        <input type="number" id="weight" name="weight" step="any" required />
+
+        <button type="button" id="calculateBMRButton">Calculate BMR</button>
+      </form>
+
+      <div class="intake-records" id="result">
+        <h3>Your BMR</h3>
+      </div>
+    </div>
+
+    <script>
+      // Fetch user details using the backend endpoint
+      const userData = JSON.parse(localStorage.getItem("userData"));
+      const loggedInUserId = localStorage.getItem("loggedInUserId");
+      fetch(`http://localhost:3000/api/users/${loggedInUserId}`)
+        .then((response) => {
+          if (response.ok) {
+            return response.json();
+          } else {
+            throw new Error("Failed to fetch user details");
+          }
+        })
+        .then((userData) => {
+          // Populate the form fields with user details
+          document.getElementById("age").value = userData.Age || "";
+          document.getElementById("weight").value = userData.Weight || "";
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          alert("Failed to fetch user details");
+        });
+
+      // Calculate BMR function
+      function calculateBMR() {
+        const age = parseInt(document.getElementById("age").value);
+        const weight = parseFloat(document.getElementById("weight").value);
+        let bmr = 0;
+
+        if (age >= 3 && age <= 10) {
+          bmr = 0.085 * weight + 2.03;
+        } else if (age >= 11 && age <= 18) {
+          bmr = 0.073 * weight + 2.48;
+        } else if (age >= 19 && age <= 30) {
+          bmr = 0.074 * weight + 2.754;
+        } else if (age >= 31 && age <= 60) {
+          bmr = 0.063 * weight + 2.896;
+        } else if (age > 60) {
+          bmr = 0.049 * weight + 2.755;
+        }
+
+        const activityRecordsDiv = document.getElementById("result");
+        activityRecordsDiv.innerHTML = `<div class="record">
+        <span>Your Basal Metabolic Rate (BMR) is: ${bmr.toFixed(2)} MJ/d</span>
+      </div>`;
+      }
+
+      // Event listener for calculating BMR
+      document
+        .getElementById("calculateBMRButton")
+        .addEventListener("click", calculateBMR);
+
+      // Logout functionality
+      document.getElementById("logout").addEventListener("click", function () {
+        localStorage.setItem("loggedIn", "false");
+        window.location.href = "./login.html";
+      });
+
+      // Redirect to login page if not logged in
+      const isLoggedIn = localStorage.getItem("loggedIn");
+      if (isLoggedIn !== "true") {
+        window.location.href = "./login.html";
+      }
+    </script>
+  </body>
+</html>
