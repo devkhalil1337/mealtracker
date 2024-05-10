@@ -514,6 +514,87 @@ app.delete('/api/mealtracker/:mealTrackerID', (req, res) => {
 
 
 
+// CREATE operation - Add a new BMR record
+app.post('/api/bmr', (req, res) => {
+    const { userID, age, weight, datetime } = req.body;
+    const query = `INSERT INTO BMR (UserID, Age, Weight, Datetime)
+                   VALUES (@UserID, @Age, @Weight, @Datetime);`;
+    const request = new sql.Request();
+    request.input('UserID', sql.Int, userID);
+    request.input('Age', sql.Int, age);
+    request.input('Weight', sql.Decimal(10, 2), weight);
+    request.input('Datetime', sql.DateTime, datetime);
+
+    request.query(query, (err, result) => {
+        if (err) {
+            res.status(500).send(err.message);
+        } else {
+            res.status(201).send('BMR record created successfully');
+        }
+    });
+});
+
+// READ operation - Get all BMR records
+app.get('/api/bmr/:userID', (req, res) => {
+    const userId = req.params.userID;
+    const query = `SELECT * FROM BMR where UserID = ${userId};`;
+    sql.query(query, (err, result) => {
+        if (err) {
+            res.status(500).send(err.message);
+        } else {
+            res.status(200).json(result.recordset);
+        }
+    });
+});
+
+// UPDATE operation - Update a BMR record
+app.put('/api/bmr/:id', (req, res) => {
+    const { userID, age, weight, datetime } = req.body;
+    const { id } = req.params;
+    const query = `UPDATE BMR SET UserID = @UserID, Age = @Age, Weight = @Weight, Datetime = @Datetime
+                   WHERE BMRID = @BMRID;`;
+    const request = new sql.Request();
+    request.input('BMRID', sql.Int, id);
+    request.input('UserID', sql.Int, userID);
+    request.input('Age', sql.Int, age);
+    request.input('Weight', sql.Decimal(10, 2), weight);
+    request.input('Datetime', sql.DateTime, datetime);
+
+    request.query(query, (err, result) => {
+        if (err) {
+            res.status(500).send(err.message);
+        } else {
+            res.status(200).send('BMR record updated successfully');
+        }
+    });
+});
+
+// DELETE operation - Delete a BMR record
+app.delete('/api/bmr/:id', (req, res) => {
+    const { id } = req.params;
+    const query = `DELETE FROM BMR WHERE BMRID = @BMRID;`;
+    const request = new sql.Request();
+    request.input('BMRID', sql.Int, id);
+
+    request.query(query, (err, result) => {
+        if (err) {
+            res.status(500).send(err.message);
+        } else {
+            res.status(200).send('BMR record deleted successfully');
+        }
+    });
+});
+
+
+
+
+
+
+
+
+
+
+
 
 
 // Create Daily Nutrition Record
