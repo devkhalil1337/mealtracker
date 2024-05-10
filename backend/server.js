@@ -270,10 +270,10 @@ app.delete('/api/meals/:mealID', (req, res) => {
 
 // Create Activity
 app.post('/api/activities', (req, res) => {
-    const { userId, activityType, caloriesBurned, time } = req.body;
+    const { userId, name, Caloriesburned, time, date } = req.body;
     const query = `
-        INSERT INTO [dbo].[ActivityTracker] (UserID, Activitytype, Caloriesburned, Time)
-        VALUES (${userId}, '${activityType}', ${caloriesBurned}, '${time}')
+        INSERT INTO [dbo].[ActivityTracker] (UserID, name, Caloriesburned, Time,date)
+        VALUES (${userId}, '${name}', ${Caloriesburned}, '${time}', '${date}')
     `;
     sql.query(query)
         .then(result => res.json({ message: 'Activity recorded successfully' }))
@@ -292,10 +292,10 @@ app.get('/api/activities/:userId', (req, res) => {
 // Update Activity
 app.put('/api/activities/:activityId', (req, res) => {
     const activityId = req.params.activityId;
-    const { activityType, caloriesBurned, time } = req.body;
+    const { name, Caloriesburned, time, date } = req.body;
     const query = `
         UPDATE [dbo].[ActivityTracker]
-        SET Activitytype = '${activityType}', Caloriesburned = ${caloriesBurned}, Time = '${time}'
+        SET name = '${name}', Caloriesburned = ${Caloriesburned}, Time = '${time}',date = '${date}'
         WHERE ActivityID = ${activityId}
     `;
     sql.query(query)
