@@ -529,7 +529,7 @@ app.post('/api/bmr', (req, res) => {
         if (err) {
             res.status(500).send(err.message);
         } else {
-            res.status(201).send('BMR record created successfully');
+            res.json({ success: true });
         }
     });
 });

@@ -77,11 +77,70 @@
         });
 
       // Calculate BMR function
-      function calculateBMR() {
+      function calculateBMRFrontend() {
         const age = parseInt(document.getElementById("age").value);
         const weight = parseFloat(document.getElementById("weight").value);
         let bmr = 0;
 
+        // Calculation logic...
+
+        const currentDate = new Date();
+        const formattedDateTime = currentDate.toLocaleString(); // Get both date and time
+        const requestBody = {
+          userID: loggedInUserId,
+          age: age,
+          weight: weight,
+          datetime: formattedDateTime, // Include date and time in the request body
+        };
+
+        // Send POST request to save BMR record
+        fetch("http://localhost:3000/api/bmr", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestBody),
+        })
+          .then((response) => {
+            if (response.status == 200) {
+              return response.json();
+            } else {
+              throw new Error("Failed to save BMR record");
+            }
+          })
+          .then((data) => {
+            // Fetch and display all BMR records for the user
+            fetchBMRRecords(loggedInUserId);
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            alert("Failed to save BMR record");
+          });
+      }
+
+      // Fetch and display all BMR records for the user
+      function fetchBMRRecords(userId) {
+        fetch(`http://localhost:3000/api/bmr/${userId}`)
+          .then((response) => {
+            if (response.status == 200) {
+              return response.json();
+            } else {
+              throw new Error("Failed to fetch BMR records");
+            }
+          })
+          .then((records) => {
+            // Calculate BMR for each record and display them
+            records.forEach((record) => {
+              record.BMR = calculateBMR(record.Age, record.Weight); // Calculate BMR
+            });
+
+            // Display BMR records on the page
+            displayBMRRecords(records);
+          });
+      }
+
+      function calculateBMR(age, weight) {
+        let bmr = 0;
         if (age >= 3 && age <= 10) {
           bmr = 0.085 * weight + 2.03;
         } else if (age >= 11 && age <= 18) {
@@ -93,17 +152,114 @@
         } else if (age > 60) {
           bmr = 0.049 * weight + 2.755;
         }
-
+        return bmr;
+      }
+      // Function to display BMR records on the page
+      // Function to display BMR records on the page
+      function displayBMRRecords(records) {
         const activityRecordsDiv = document.getElementById("result");
-        activityRecordsDiv.innerHTML = `<div class="record">
-        <span>Your Basal Metabolic Rate (BMR) is: ${bmr.toFixed(2)} MJ/d</span>
-      </div>`;
+
+        // Clear previous records
+        activityRecordsDiv.innerHTML = "";
+
+        // Create and append the <h3> element for BMR
+        const bmrHeading = document.createElement("h3");
+        bmrHeading.textContent = "Your BMR";
+        activityRecordsDiv.appendChild(bmrHeading);
+
+        records.forEach((record) => {
+          const formattedDateTime = new Date(record.Datetime).toLocaleString(); // Format date and time
+          const recordElement = document.createElement("div");
+          recordElement.classList.add("record");
+          recordElement.innerHTML = `
+      <span>${formattedDateTime} - BMR: ${record.BMR} MJ/d</span>
+      <button class="edit" onclick="editBMR(${record.BMRID})">Edit</button>
+      <button class="delete" onclick="deleteBMR(${record.BMRID})">Delete</button>
+    `;
+          activityRecordsDiv.appendChild(recordElement);
+        });
       }
 
+      // Function to handle BMR record deletion
+      function deleteBMR(bmrId) {
+        fetch(`http://localhost:3000/api/bmr/${bmrId}`, {
+          method: "DELETE",
+        })
+          .then((response) => {
+            if (response.ok) {
+              // Refresh BMR records after deletion
+              fetchBMRRecords(loggedInUserId);
+            } else {
+              throw new Error("Failed to delete BMR record");
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            alert("Failed to delete BMR record");
+          });
+      }
+
+      function editBMR(bmrId) {
+        // Prompt the user to enter new values for age and weight
+        const newAge = prompt("Enter new age:");
+        const newWeight = prompt("Enter new weight (kg):");
+
+        // Check if the user clicked cancel or entered invalid values
+        if (
+          newAge === null ||
+          newAge === "" ||
+          newWeight === null ||
+          newWeight === "" ||
+          isNaN(newAge) ||
+          isNaN(newWeight)
+        ) {
+          alert("Invalid value entered. Please try again.");
+          return;
+        }
+
+        // Construct the request body
+        const requestBody = {
+          userID: loggedInUserId, // Add the logged-in user ID
+          age: parseInt(newAge),
+          weight: parseFloat(newWeight),
+        };
+
+        // Calculate the current date and time
+        const currentDate = new Date();
+        const formattedDateTime = currentDate.toLocaleString();
+
+        // Include date and time in the request body
+        requestBody.datetime = formattedDateTime;
+
+        // Send a PUT request to update the BMR record
+        fetch(`http://localhost:3000/api/bmr/${bmrId}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestBody),
+        })
+          .then((response) => {
+            if (response.ok) {
+              alert("Record Updated.");
+              // Refresh BMR records after update
+              fetchBMRRecords(loggedInUserId);
+            } else {
+              throw new Error("Failed to update BMR record");
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            alert("Failed to update BMR record");
+          });
+      }
       // Event listener for calculating BMR
       document
         .getElementById("calculateBMRButton")
-        .addEventListener("click", calculateBMR);
+        .addEventListener("click", calculateBMRFrontend);
+
+      // Fetch and display BMR records when the page loads
+      fetchBMRRecords(loggedInUserId);
 
       // Logout functionality
       document.getElementById("logout").addEventListener("click", function () {
@@ -116,6 +272,10 @@
       if (isLoggedIn !== "true") {
         window.location.href = "./login.html";
       }
+
+      document.getElementById("update").addEventListener("click", function () {
+        window.location.href = "./updateProfile.html";
+      });
     </script>
   </body>
 </html>
