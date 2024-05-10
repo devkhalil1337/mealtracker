@@ -312,6 +312,209 @@ app.delete('/api/activities/:activityId', (req, res) => {
         .catch(err => res.status(500).json({ error: err.message }));
 });
 
+app.post('/api/mealtracker', (req, res) => {
+    const { userID, mealID, weight, timeOfMeal, nutrients, drinkVolume, drinkTime, time, date } = req.body;
+    console.log({ userID, })
+    const query = `
+        INSERT INTO MealTracker (UserID, MealID, Weight, TimeOfMeal, Nutrients, DrinkVolume, DrinkTime, Time, Date)
+        VALUES (@userID, @mealID, @weight, @timeOfMeal, @nutrients, @drinkVolume, @drinkTime, @time, @date);
+    `;
+
+    const request = new sql.Request();
+    request.input('UserID', sql.Int, userID);
+    request.input('MealID', sql.VarChar(255), mealID);
+    request.input('Weight', sql.Decimal(10, 2), weight);
+    request.input('TimeOfMeal', sql.DateTime, timeOfMeal);
+    request.input('Nutrients', sql.NVarChar(sql.MAX), JSON.stringify(nutrients));
+    request.input('DrinkVolume', sql.Decimal(10, 2), drinkVolume);
+    request.input('DrinkTime', sql.DateTime, drinkTime);
+    request.input('Time', sql.VarChar(8), time);
+    request.input('Date', sql.Date, date);
+
+    request.query(query)
+        .then(result => {
+            res.json({ message: 'Meal Tracker record created successfully.' });
+        })
+        .catch(error => {
+            res.status(500).json({ error: error.message });
+        });
+});
+
+//Update Meal Tracker
+app.put('/api/mealtracker/:mealTrackerID', (req, res) => {
+    const mealTrackerID = req.params.mealTrackerID;
+    const { userID, mealID, mealName, weight, timeOfMeal, nutrients, drinkVolume, drinkTime, time, date } = req.body;
+
+    //to update MealTracker table
+    const query = `
+        UPDATE MealTracker 
+        SET UserID = @UserID, Weight = @Weight, TimeOfMeal = @TimeOfMeal, Nutrients = @Nutrients, 
+            DrinkVolume = @DrinkVolume, DrinkTime = @DrinkTime, Time = @Time, Date = @Date
+        WHERE MealTrackerID = @mealTrackerID;
+    `;
+
+
+    const request = new sql.Request();
+    request.input('UserID', sql.Int, userID);
+    // request.input('MealName', sql.VarChar(255), mealName);
+    request.input('Weight', sql.Decimal(10, 2), weight);
+    request.input('TimeOfMeal', sql.DateTime, timeOfMeal);
+    request.input('Nutrients', sql.NVarChar(sql.MAX), nutrients);
+    request.input('DrinkVolume', sql.Decimal(10, 2), drinkVolume);
+    request.input('DrinkTime', sql.DateTime, drinkTime);
+    request.input('Time', sql.VarChar(8), time);
+    request.input('Date', sql.Date, date);
+    request.input('mealTrackerID', sql.Int, mealTrackerID);
+
+    request.query(query)
+        .then(result => {
+            if (result.rowsAffected[0] > 0) {
+                const query = `
+                UPDATE [dbo].[Meal]
+                SET Mealname = '${mealName}' WHERE MealID = ${mealID} 
+            `;
+                sql.query(query)
+                    .then(result => {
+                        res.status(201).send({ message: 'Meal and Meal Tracker updated successfully' })
+                        return;
+                    })
+                    .catch(err => res.status(500).json({ error: err.message }));
+
+                return;
+            } else {
+                res.status(404).json({ message: 'Meal Tracker record not found.' });
+            }
+        })
+        .catch(error => {
+            res.status(500).json({ error: error.message });
+        });
+});
+
+
+
+app.get('/api/mealtracker/:userId', (req, res) => {
+    const userId = req.params.userId;
+    const query = `
+        SELECT Meal.*, MealTracker.* FROM [dbo].[Meal] JOIN [dbo].[MealTracker] ON Meal.MealID = MealTracker.MealID WHERE MealTracker.UserID = ${userId};
+    `;
+
+    sql.query(query)
+        .then(result => {
+            if (result.recordset.length > 0) {
+                console.log(result.recordset)
+                const mealTrackerData = result.recordset.map(row => ({
+                    mealTrackerID: row.MealTrackerID,
+                    userID: row.UserID[0],
+                    mealID: row.MealID[0],
+                    mealName: row.Mealname,
+                    weight: row.Weight,
+                    TimeOfMeal: row.TimeOfMeal,
+                    drinkVolume: row.DrinkVolume,
+                    drinkTime: row.DrinkTime,
+                    time: row.Time,
+                    date: row.Date,
+                    nutrients: JSON.parse(row.Nutrients),
+                }))
+                res.json(mealTrackerData);
+            } else {
+                res.status(404).json({ message: 'Meal Tracker record not found.' });
+            }
+        })
+        .catch(error => {
+            res.status(500).json({ error: error.message });
+        });
+});
+
+app.get('/api/mealtracker/:userID/:mealTrackerID', (req, res) => {
+    const mealTrackerID = req.params.mealTrackerID;
+    const userId = req.params.userID;
+
+    const query = `
+        SELECT * FROM MealTracker WHERE MealTrackerID = @mealTrackerID and UserId = @userId;
+    `;
+
+    const request = new sql.Request();
+    request.input('mealTrackerID', sql.Int, mealTrackerID);
+    request.input('UserId', sql.Int, userId);
+
+    request.query(query)
+        .then(result => {
+            if (result.recordset.length > 0) {
+                res.json(result.recordset[0]);
+            } else {
+                res.status(404).json({ message: 'Meal Tracker record not found.' });
+            }
+        })
+        .catch(error => {
+            res.status(500).json({ error: error.message });
+        });
+});
+
+
+app.put('/api/mealtracker/:mealTrackerID', (req, res) => {
+    const mealTrackerID = req.params.mealTrackerID;
+    // const { UserID, MealName, Weight, TimeOfMeal, Nutrients, DrinkVolume, DrinkTime, Time, Date } = req.body;
+    const { userID, mealID, weight, timeOfMeal, nutrients, drinkVolume, drinkTime, time, date } = req.body;
+
+    const query = `
+        UPDATE MealTracker 
+        SET UserID = @UserID, MealID = @mealID, Weight = @Weight, TimeOfMeal = @TimeOfMeal, Nutrients = @Nutrients, 
+            DrinkVolume = @DrinkVolume, DrinkTime = @DrinkTime, Time = @Time, Date = @Date
+        WHERE MealTrackerID = @mealTrackerID;
+    `;
+
+    const request = new sql.Request();
+    request.input('UserID', sql.Int, userID);
+    request.input('MealID', sql.Int, mealID);
+    request.input('Weight', sql.Decimal(10, 2), weight);
+    request.input('TimeOfMeal', sql.DateTime, timeOfMeal);
+    request.input('Nutrients', sql.NVarChar(sql.MAX), nutrients);
+    request.input('DrinkVolume', sql.Decimal(10, 2), drinkVolume);
+    request.input('DrinkTime', sql.DateTime, drinkTime);
+    request.input('Time', sql.VarChar(8), time);
+    request.input('Date', sql.Date, date);
+    request.input('mealTrackerID', sql.Int, mealTrackerID);
+
+    request.query(query)
+        .then(result => {
+            if (result.rowsAffected[0] > 0) {
+                res.json({ message: 'Meal Tracker record updated successfully.' });
+            } else {
+                res.status(404).json({ message: 'Meal Tracker record not found.' });
+            }
+        })
+        .catch(error => {
+            res.status(500).json({ error: error.message });
+        });
+});
+
+
+app.delete('/api/mealtracker/:mealTrackerID', (req, res) => {
+    const mealTrackerID = req.params.mealTrackerID;
+
+    const query = `
+        DELETE FROM MealTracker WHERE MealTrackerID = @mealTrackerID;
+    `;
+
+    const request = new sql.Request();
+    request.input('mealTrackerID', sql.Int, mealTrackerID);
+
+    request.query(query)
+        .then(result => {
+            if (result.rowsAffected[0] > 0) {
+                res.json({ message: 'Meal Tracker record deleted successfully.' });
+            } else {
+                res.status(404).json({ message: 'Meal Tracker record not found.' });
+            }
+        })
+        .catch(error => {
+            res.status(500).json({ error: error.message });
+        });
+});
+
+
+
+
 
 // Create Daily Nutrition Record
 app.post('/api/daily-nutri', (req, res) => {
