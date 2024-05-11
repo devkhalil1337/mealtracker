@@ -55,37 +55,158 @@
     </div>
 
     <script>
-      // Fetch user details using the backend endpoint
-      const userData = JSON.parse(localStorage.getItem("userData"));
       const loggedInUserId = localStorage.getItem("loggedInUserId");
-      fetch(`http://localhost:3000/api/users/${loggedInUserId}`)
-        .then((response) => {
-          if (response.ok) {
-            return response.json();
-          } else {
-            throw new Error("Failed to fetch user details");
-          }
-        })
-        .then((userData) => {
-          // Populate the form fields with user details
-          document.getElementById("age").value = userData.Age || "";
-          document.getElementById("weight").value = userData.Weight || "";
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-          alert("Failed to fetch user details");
-        });
+      let gender = "";
+      let hasBMRRecord = false; // Flag to track if user has existing BMR record
+      let OldBmrID = "";
+      // Function to fetch user details and populate form fields
+      function fetchUserDetails() {
+        fetch(`http://localhost:3000/api/users/${loggedInUserId}`)
+          .then((response) => {
+            if (response.ok) {
+              return response.json();
+            } else {
+              throw new Error("Failed to fetch user details");
+            }
+          })
+          .then((userData) => {
+            document.getElementById("age").value = userData.Age || "";
+            document.getElementById("weight").value = userData.Weight || "";
+            gender = userData.Sex || "";
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            alert("Failed to fetch user details");
+          });
+      }
 
-      // Calculate BMR function
+      // Function to check for existing BMR record on page load
+      function checkBMRRecord() {
+        fetch(`http://localhost:3000/api/bmr/${loggedInUserId}`)
+          .then((response) => {
+            if (response.ok) {
+              return response.json();
+            } else {
+              throw new Error("Failed to fetch BMR records");
+            }
+          })
+          .then((records) => {
+            if (records.length > 0) {
+              console.log(records.length > 0);
+              OldBMR = calculateBMR(records[0].Age, records[0].Weight);
+              records[0].BMR = OldBMR;
+              displayBMRRecords(records);
+              OldBmrID = records[0].BMRID;
+              hasBMRRecord = true;
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            alert("Failed to fetch BMR records");
+          });
+      }
+
+      // Function to calculate BMR based on age, weight, and gender
+      function calculateBMR(age, weight) {
+        let bmr = 0;
+
+        // Determine BMR based on age, weight, and gender
+        if (gender === "f") {
+          console.log(gender);
+          if (age < 3) {
+            bmr = 0.244 * weight - 0.13;
+          } else if (age >= 4 && age <= 10) {
+            bmr = 0.085 * weight + 2.03;
+          } else if (age >= 11 && age <= 18) {
+            bmr = 0.056 * weight + 2.9;
+          } else if (age >= 19 && age <= 30) {
+            bmr = 0.0615 * weight + 2.08;
+          } else if (age >= 31 && age <= 60) {
+            bmr = 0.0364 * weight + 3.47;
+          } else if (age >= 61 && age <= 75) {
+            bmr = 0.0386 * weight + 2.88;
+          } else if (age > 75) {
+            bmr = 0.041 * weight + 2.61;
+          }
+        } else if (gender === "m") {
+          console.log(gender);
+          if (age < 3) {
+            bmr = 0.249 * weight - 0.13;
+          } else if (age >= 4 && age <= 10) {
+            bmr = 0.095 * weight + 2.11;
+          } else if (age >= 11 && age <= 18) {
+            bmr = 0.074 * weight + 2.75;
+          } else if (age >= 19 && age <= 30) {
+            bmr = 0.064 * weight + 2.84;
+          } else if (age >= 31 && age <= 60) {
+            bmr = 0.0485 * weight + 3.67;
+          } else if (age >= 61 && age <= 75) {
+            bmr = 0.0499 * weight + 2.93;
+          } else if (age > 75) {
+            bmr = 0.035 * weight + 3.43;
+          }
+        }
+
+        return bmr;
+      }
+
+      // Function to display BMR records on the page
+      function displayBMRRecords(records) {
+        const activityRecordsDiv = document.getElementById("result");
+        // Clear previous records
+        activityRecordsDiv.innerHTML = "";
+        // Create and append the <h3> element for BMR
+        const bmrHeading = document.createElement("h3");
+        bmrHeading.textContent = "Your BMR";
+        activityRecordsDiv.appendChild(bmrHeading);
+        records.forEach((record) => {
+          const formattedDateTime = new Date(record.Datetime).toLocaleString(); // Format date and time
+          const recordElement = document.createElement("div");
+          recordElement.classList.add("record");
+          recordElement.innerHTML = `
+            <span>${formattedDateTime} - BMR: ${record.BMR} MJ/d</span>
+          `;
+          activityRecordsDiv.appendChild(recordElement);
+        });
+      }
+
+      // Function to calculate BMR on the frontend
       function calculateBMRFrontend() {
         const age = parseInt(document.getElementById("age").value);
         const weight = parseFloat(document.getElementById("weight").value);
         let bmr = 0;
+        const tempDate = new Date();
+        const options = {
+          year: "numeric",
+          month: "numeric",
+          day: "numeric",
+          hour: "numeric",
+          minute: "numeric",
+          second: "numeric",
+          hour12: true,
+        };
+        const Datetime = tempDate.toLocaleString("en-US", options);
+        // temp = [{ BMR:  }];
+        // Clear previous records
+        const activityRecordsDiv = document.getElementById("result");
+        activityRecordsDiv.innerHTML = "";
+        // Create and append the <h3> element for BMR
+        const bmrHeading = document.createElement("h3");
+        bmrHeading.textContent = "Your BMR";
+        activityRecordsDiv.appendChild(bmrHeading);
+
+        const recordElement = document.createElement("div");
+        recordElement.classList.add("record");
+        recordElement.innerHTML = `
+            <span>${Datetime} - BMR: ${calculateBMR(age, weight)} MJ/d</span>
+          `;
+        activityRecordsDiv.appendChild(recordElement);
+
+        const currentDate = new Date();
+        const formattedDateTime = currentDate.toLocaleString();
 
         // Calculation logic...
 
-        const currentDate = new Date();
-        const formattedDateTime = currentDate.toLocaleString(); // Get both date and time
         const requestBody = {
           userID: loggedInUserId,
           age: age,
@@ -93,7 +214,17 @@
           datetime: formattedDateTime, // Include date and time in the request body
         };
 
-        // Send POST request to save BMR record
+        if (!hasBMRRecord) {
+          // If no record exists, create a new one
+          createBMRRecord(requestBody);
+        } else {
+          // If record exists, update it
+          updateBMRRecord(requestBody);
+        }
+      }
+
+      // Function to create a new BMR record
+      function createBMRRecord(requestBody) {
         fetch("http://localhost:3000/api/bmr", {
           method: "POST",
           headers: {
@@ -109,8 +240,9 @@
             }
           })
           .then((data) => {
-            // Fetch and display all BMR records for the user
-            fetchBMRRecords(loggedInUserId);
+            // fetchBMRRecords(loggedInUserId);
+            alert("record created.");
+            hasBMRRecord = true; // Update flag
           })
           .catch((error) => {
             console.error("Error:", error);
@@ -118,121 +250,9 @@
           });
       }
 
-      // Fetch and display all BMR records for the user
-      function fetchBMRRecords(userId) {
-        fetch(`http://localhost:3000/api/bmr/${userId}`)
-          .then((response) => {
-            if (response.status == 200) {
-              return response.json();
-            } else {
-              throw new Error("Failed to fetch BMR records");
-            }
-          })
-          .then((records) => {
-            // Calculate BMR for each record and display them
-            records.forEach((record) => {
-              record.BMR = calculateBMR(record.Age, record.Weight); // Calculate BMR
-            });
-
-            // Display BMR records on the page
-            displayBMRRecords(records);
-          });
-      }
-
-      function calculateBMR(age, weight) {
-        let bmr = 0;
-        if (age >= 3 && age <= 10) {
-          bmr = 0.085 * weight + 2.03;
-        } else if (age >= 11 && age <= 18) {
-          bmr = 0.073 * weight + 2.48;
-        } else if (age >= 19 && age <= 30) {
-          bmr = 0.074 * weight + 2.754;
-        } else if (age >= 31 && age <= 60) {
-          bmr = 0.063 * weight + 2.896;
-        } else if (age > 60) {
-          bmr = 0.049 * weight + 2.755;
-        }
-        return bmr;
-      }
-      // Function to display BMR records on the page
-      // Function to display BMR records on the page
-      function displayBMRRecords(records) {
-        const activityRecordsDiv = document.getElementById("result");
-
-        // Clear previous records
-        activityRecordsDiv.innerHTML = "";
-
-        // Create and append the <h3> element for BMR
-        const bmrHeading = document.createElement("h3");
-        bmrHeading.textContent = "Your BMR";
-        activityRecordsDiv.appendChild(bmrHeading);
-
-        records.forEach((record) => {
-          const formattedDateTime = new Date(record.Datetime).toLocaleString(); // Format date and time
-          const recordElement = document.createElement("div");
-          recordElement.classList.add("record");
-          recordElement.innerHTML = `
-      <span>${formattedDateTime} - BMR: ${record.BMR} MJ/d</span>
-      <button class="edit" onclick="editBMR(${record.BMRID})">Edit</button>
-      <button class="delete" onclick="deleteBMR(${record.BMRID})">Delete</button>
-    `;
-          activityRecordsDiv.appendChild(recordElement);
-        });
-      }
-
-      // Function to handle BMR record deletion
-      function deleteBMR(bmrId) {
-        fetch(`http://localhost:3000/api/bmr/${bmrId}`, {
-          method: "DELETE",
-        })
-          .then((response) => {
-            if (response.ok) {
-              // Refresh BMR records after deletion
-              fetchBMRRecords(loggedInUserId);
-            } else {
-              throw new Error("Failed to delete BMR record");
-            }
-          })
-          .catch((error) => {
-            console.error("Error:", error);
-            alert("Failed to delete BMR record");
-          });
-      }
-
-      function editBMR(bmrId) {
-        // Prompt the user to enter new values for age and weight
-        const newAge = prompt("Enter new age:");
-        const newWeight = prompt("Enter new weight (kg):");
-
-        // Check if the user clicked cancel or entered invalid values
-        if (
-          newAge === null ||
-          newAge === "" ||
-          newWeight === null ||
-          newWeight === "" ||
-          isNaN(newAge) ||
-          isNaN(newWeight)
-        ) {
-          alert("Invalid value entered. Please try again.");
-          return;
-        }
-
-        // Construct the request body
-        const requestBody = {
-          userID: loggedInUserId, // Add the logged-in user ID
-          age: parseInt(newAge),
-          weight: parseFloat(newWeight),
-        };
-
-        // Calculate the current date and time
-        const currentDate = new Date();
-        const formattedDateTime = currentDate.toLocaleString();
-
-        // Include date and time in the request body
-        requestBody.datetime = formattedDateTime;
-
-        // Send a PUT request to update the BMR record
-        fetch(`http://localhost:3000/api/bmr/${bmrId}`, {
+      // Function to update an existing BMR record
+      function updateBMRRecord(requestBody) {
+        fetch(`http://localhost:3000/api/bmr/${OldBmrID}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -241,9 +261,7 @@
         })
           .then((response) => {
             if (response.ok) {
-              alert("Record Updated.");
-              // Refresh BMR records after update
-              fetchBMRRecords(loggedInUserId);
+              alert("record Updated.");
             } else {
               throw new Error("Failed to update BMR record");
             }
@@ -253,13 +271,11 @@
             alert("Failed to update BMR record");
           });
       }
+
       // Event listener for calculating BMR
       document
         .getElementById("calculateBMRButton")
         .addEventListener("click", calculateBMRFrontend);
-
-      // Fetch and display BMR records when the page loads
-      fetchBMRRecords(loggedInUserId);
 
       // Logout functionality
       document.getElementById("logout").addEventListener("click", function () {
@@ -273,9 +289,16 @@
         window.location.href = "./login.html";
       }
 
+      // Redirect to profile update page
       document.getElementById("update").addEventListener("click", function () {
         window.location.href = "./updateProfile.html";
       });
+
+      // Fetch user details and BMR records when the page loads
+      window.onload = function () {
+        fetchUserDetails();
+        checkBMRRecord();
+      };
     </script>
   </body>
 </html>
