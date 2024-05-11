@@ -9,6 +9,71 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="styles.css" />
+
+    <style>
+      .custom-dropdown {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 30px;
+        margin-bottom: 30px;
+      }
+
+      .custom-dropdown-select {
+        -webkit-border-radius: 0 !important;
+        border: 0;
+        border-radius: 0px;
+        outline: 1px solid #ccc;
+        outline-offset: -3px;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background-color: #91c789;
+        border: 1px solid #ccc;
+        padding: 15px 26px;
+        cursor: pointer;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23000" width="20" height="20"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+        background-repeat: no-repeat;
+        background-position: right 8px center;
+      }
+
+      .custom-dropdown-select option {
+        padding: 10px 20px;
+        border-radius: 0px;
+      }
+
+      .custom-dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f9f9f9;
+        min-width: 160px;
+        box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+        z-index: 1;
+        border-radius: 0;
+      }
+
+      .custom-dropdown-content a {
+        color: black;
+        padding: 10px 20px;
+        text-decoration: none;
+        display: block;
+        border-bottom: 1px solid #ccc;
+        border-radius: 0;
+      }
+
+      .custom-dropdown-content a:last-child {
+        border-bottom: none;
+      }
+
+      .custom-dropdown-content a:hover {
+        background-color: #f1f1f1;
+      }
+
+      .custom-dropdown:hover .custom-dropdown-content {
+        display: block;
+      }
+    </style>
   </head>
 
   <body>
@@ -35,6 +100,13 @@
         <a href="#" id="logout">Logout</a>
         <a href="#" id="update">Edit Profile</a>
       </div>
+    </div>
+
+    <div class="custom-dropdown">
+      <select class="custom-dropdown-select" id="viewDropdown">
+        <option value="daily">View: Daily</option>
+        <option value="thirtyDays" style="padding: 40px">View: 30 Days</option>
+      </select>
     </div>
 
     <div id="nutrition-report-container" class="meal-column"></div>
