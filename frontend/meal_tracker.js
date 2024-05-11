@@ -98,7 +98,10 @@ function addIntakeRecordToDOM(mealRecord, recordId, mealId) {
     ? mealRecord.nutrients.kcal.toFixed(2)
     : "0";
   const selectedMeal = mealData.find(meal => meal.mealID == mealId);
-
+  if (!selectedMeal) {
+    console.log("Not found")
+    return;
+  }
   const recordDiv = document.createElement("div");
   recordDiv.classList.add("record");
   recordDiv.dataset.id = recordId;

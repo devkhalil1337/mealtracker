@@ -586,91 +586,88 @@ app.delete('/api/bmr/:id', (req, res) => {
 });
 
 
-
-
-
-
-// Create Meal Ingredients
-app.post('/api/mealingredients', (req, res) => {
-    const { UserID, MealID, FoodName, Nutrients, IngredientsAmount } = req.body;
-
-    const query = `
-        INSERT INTO MealIngredients (UserID, MealID, FoodName, Nutrients, IngredientsAmount)
-        VALUES (@UserID, @MealID, @FoodName, @Nutrients, @IngredientsAmount);
-    `;
-
+// CREATE operation - Add a new MealIngredientTracker record
+app.post('/api/mealIngredientTracker', (req, res) => {
+    const { userID, weight, ingredientsID, mealName, timeOfMeal, nutrients, drinkVolume, drinkTime, date, time } = req.body;
+    const query = `INSERT INTO MealIngredientTracker (UserID, Weight, IngredientsID,Mealname, TimeOfMeal, Nutrients, DrinkVolume, DrinkTime, Date,Time)
+                   VALUES (@UserID, @Weight, @IngredientsID,@Mealname, @TimeOfMeal, @Nutrients, @DrinkVolume, @DrinkTime, @Date,@Time);`;
     const request = new sql.Request();
-    request.input('UserID', sql.Int, UserID);
-    request.input('MealID', sql.Int, MealID);
-    request.input('FoodName', sql.VarChar(255), FoodName);
-    request.input('Nutrients', sql.NVarChar(sql.MAX), JSON.stringify(Nutrients)); // Assuming Nutrients is an object
-    request.input('IngredientsAmount', sql.Decimal(10, 2), IngredientsAmount);
+    request.input('UserID', sql.Int, userID);
+    request.input('Weight', sql.Decimal(10, 2), weight);
+    request.input('IngredientsID', sql.VarChar(255), String(ingredientsID));
+    request.input('Mealname', sql.VarChar(255), mealName);
+    request.input('TimeOfMeal', sql.DateTime, timeOfMeal);
+    request.input('Nutrients', sql.NVarChar(sql.MAX), JSON.stringify(nutrients));
+    request.input('DrinkVolume', sql.Decimal(10, 2), drinkVolume);
+    request.input('DrinkTime', sql.DateTime, drinkTime);
+    request.input('Date', sql.Date, date);
+    request.input('Time', sql.VarChar(255), time);
 
-    request.query(query)
-        .then(() => res.send('Meal Ingredients created successfully'))
-        .catch(err => res.status(500).send(err.message));
+    request.query(query, (err, result) => {
+        if (err) {
+            res.status(500).send(err.message);
+        } else {
+            res.status(200).json({ success: true });
+        }
+    });
 });
 
-// Read Meal Ingredients
-app.get('/api/mealingredients/:userID', (req, res) => {
+// READ operation - Get all records for a specific user
+app.get('/api/mealIngredientTracker/:userID', (req, res) => {
     const userID = req.params.userID;
-
-    const query = `
-        SELECT * FROM MealIngredients WHERE UserID = @userID;
-    `;
-
+    const query = `SELECT * from MealIngredientTracker WHERE UserID = @UserID;`;
+    // const query = `SELECT Ingredients.Name, MealIngredientTracker.* from Ingredients JOIN MealIngredientTracker ON Ingredients.IngredientsID = MealIngredientTracker.IngredientsID WHERE UserID = @UserID;`;
     const request = new sql.Request();
-    request.input('userID', sql.Int, userID);
+    request.input('UserID', sql.Int, userID);
 
-    request.query(query)
-        .then(result => res.json(result.recordset))
-        .catch(err => res.status(500).send(err.message));
+    request.query(query, (err, result) => {
+        if (err) {
+            res.status(500).send(err.message);
+        } else {
+            res.status(200).json(result.recordset);
+        }
+    });
 });
 
-// Update Meal Ingredients
-app.put('/api/mealingredients/:mealIngredientsID', (req, res) => {
-    const mealIngredientsID = req.params.mealIngredientsID;
-    const { UserID, MealID, FoodName, Nutrients, IngredientsAmount } = req.body;
-
-    const query = `
-        UPDATE MealIngredients 
-        SET UserID = @UserID, MealID = @MealID, FoodName = @FoodName, Nutrients = @Nutrients, IngredientsAmount = @IngredientsAmount
-        WHERE MealIngredientsID = @mealIngredientsID;
-    `;
-
+// UPDATE operation - Update a MealIngredientTracker record
+app.put('/api/mealIngredientTracker/:id', (req, res) => {
+    const { UserID, Weight, IngredientsID, Mealname, TimeOfMeal, Nutrients, DrinkVolume, DrinkTime, Date, Time } = req.body;
+    const { id } = req.params;
+    console.log({ id }, { Weight })
+    const query = `UPDATE MealIngredientTracker SET Weight = @Weight, TimeOfMeal = @TimeOfMeal, Nutrients = @Nutrients, DrinkVolume = @DrinkVolume, DrinkTime = @DrinkTime, Date = @Date, Time = @Time
+                   WHERE MealIngredientTrackerID = @MealIngredientTrackerID;`;
     const request = new sql.Request();
-    request.input('UserID', sql.Int, UserID);
-    request.input('MealID', sql.Int, MealID);
-    request.input('FoodName', sql.VarChar(255), FoodName);
-    request.input('Nutrients', sql.NVarChar(sql.MAX), JSON.stringify(Nutrients)); // Assuming Nutrients is an object
-    request.input('IngredientsAmount', sql.Decimal(10, 2), IngredientsAmount);
-    request.input('mealIngredientsID', sql.Int, mealIngredientsID);
+    request.input('MealIngredientTrackerID', sql.Int, id);
+    // request.input('UserID', sql.Int, userID);
+    request.input('Weight', sql.Decimal(10, 2), Weight);
+    // request.input('IngredientsID', sql.VarChar(255), String(ingredientsID));
+    // request.input('Mealname', sql.VarChar(255), mealName);
+    request.input('TimeOfMeal', sql.DateTime, TimeOfMeal);
+    request.input('Nutrients', sql.NVarChar(sql.MAX), JSON.stringify(Nutrients));
+    request.input('DrinkVolume', sql.Decimal(10, 2), DrinkVolume);
+    request.input('DrinkTime', sql.DateTime, DrinkTime);
+    request.input('Date', sql.Date, Date);
+    request.input('Time', sql.VarChar(255), Time);
 
-    request.query(query)
-        .then(() => res.send('Meal Ingredients updated successfully'))
-        .catch(err => res.status(500).send(err.message));
+    request.query(query, (err, result) => {
+        if (err) {
+            res.status(500).send(err.message);
+        } else {
+            res.status(200).json({ message: 'MealIngredientTracker record updated successfully' });
+        }
+    });
 });
-
-// Delete Meal Ingredients
-app.delete('/api/mealingredients/:mealIngredientsID', (req, res) => {
-    const mealIngredientsID = req.params.mealIngredientsID;
-
-    const query = `
-        DELETE FROM MealIngredients WHERE MealIngredientsID = @mealIngredientsID;
-    `;
-
-    const request = new sql.Request();
-    request.input('mealIngredientsID', sql.Int, mealIngredientsID);
-
-    request.query(query)
-        .then(() => res.send('Meal Ingredients deleted successfully'))
-        .catch(err => res.status(500).send(err.message));
+// DELETE: Delete a record
+app.delete('/api/mealIngredientTracker/:id', async (req, res) => {
+    try {
+        new sql.Request()
+            .input('MealIngredientTrackerID', sql.Int, req.params.id)
+            .query('DELETE FROM MealIngredientTracker WHERE MealIngredientTrackerID = @MealIngredientTrackerID');
+        res.send('Delete successful');
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
 });
-
-
-
-
-
 
 
 // Create Daily Nutrition Record
@@ -738,6 +735,20 @@ app.get('/api/daily-nutri', (req, res) => {
     const { userId, date } = req.query;
     // Retrieve and format data for the specified user and date
 });
+
+// READ operation - Get all records for a specific user
+app.get('/api/Ingredients', (req, res) => {
+    const query = `SELECT * FROM Ingredients`;
+    const request = new sql.Request();
+    request.query(query, (err, result) => {
+        if (err) {
+            res.status(500).send(err.message);
+        } else {
+            res.status(200).json(result.recordset);
+        }
+    });
+});
+
 
 
 app.listen(3000, () => {
