@@ -81,21 +81,21 @@ function displayIntakeRecords() {
 
 
 
-  for (let i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i);
-    // Tjekker kun efter sporede måltider baseret på nøglepræfikset.
-    if (key.startsWith("trackedMeal-")) {
-      const mealRecord = JSON.parse(localStorage.getItem(key));
-      //      addIntakeRecordToDOM(mealRecord, key);
-    }
-  }
-  console.log(mealData)
+  // for (let i = 0; i < localStorage.length; i++) {
+  //   const key = localStorage.key(i);
+  //   // Tjekker kun efter sporede måltider baseret på nøglepræfikset.
+  //   if (key.startsWith("trackedMeal-")) {
+  //     const mealRecord = JSON.parse(localStorage.getItem(key));
+  //     //      addIntakeRecordToDOM(mealRecord, key);
+  //   }
+  // }
+  // console.log(mealData)
 }
 
 function addIntakeRecordToDOM(mealRecord, recordId, mealId) {
   // Tilføjer et sporet måltid til DOM'en.
   const kcalValue = mealRecord.nutrients.kcal
-    ? mealRecord.nutrients.kcal.toFixed(0)
+    ? mealRecord.nutrients.kcal.toFixed(2)
     : "0";
   const selectedMeal = mealData.find(meal => meal.mealID == mealId);
 
@@ -128,7 +128,6 @@ document.getElementById("registerIntakeButton").addEventListener("click", functi
   const drinkTime = document.getElementById("drinkTime").value;
 
   // Antag at vi bruger den valgte opskrift til at beregne næringsindholdet direkte
-  debugger
   const selectedMealData = mealData.find(meal => meal.mealID == mealID)//JSON.parse(localStorage.getItem(mealName)); // Dette antager, at opskriftens nøgle er dens navn
   if (!selectedMealData) {
     alert("Selected meal data not found!");

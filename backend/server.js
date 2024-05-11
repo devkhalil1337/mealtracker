@@ -590,6 +590,82 @@ app.delete('/api/bmr/:id', (req, res) => {
 
 
 
+// Create Meal Ingredients
+app.post('/api/mealingredients', (req, res) => {
+    const { UserID, MealID, FoodName, Nutrients, IngredientsAmount } = req.body;
+
+    const query = `
+        INSERT INTO MealIngredients (UserID, MealID, FoodName, Nutrients, IngredientsAmount)
+        VALUES (@UserID, @MealID, @FoodName, @Nutrients, @IngredientsAmount);
+    `;
+
+    const request = new sql.Request();
+    request.input('UserID', sql.Int, UserID);
+    request.input('MealID', sql.Int, MealID);
+    request.input('FoodName', sql.VarChar(255), FoodName);
+    request.input('Nutrients', sql.NVarChar(sql.MAX), JSON.stringify(Nutrients)); // Assuming Nutrients is an object
+    request.input('IngredientsAmount', sql.Decimal(10, 2), IngredientsAmount);
+
+    request.query(query)
+        .then(() => res.send('Meal Ingredients created successfully'))
+        .catch(err => res.status(500).send(err.message));
+});
+
+// Read Meal Ingredients
+app.get('/api/mealingredients/:userID', (req, res) => {
+    const userID = req.params.userID;
+
+    const query = `
+        SELECT * FROM MealIngredients WHERE UserID = @userID;
+    `;
+
+    const request = new sql.Request();
+    request.input('userID', sql.Int, userID);
+
+    request.query(query)
+        .then(result => res.json(result.recordset))
+        .catch(err => res.status(500).send(err.message));
+});
+
+// Update Meal Ingredients
+app.put('/api/mealingredients/:mealIngredientsID', (req, res) => {
+    const mealIngredientsID = req.params.mealIngredientsID;
+    const { UserID, MealID, FoodName, Nutrients, IngredientsAmount } = req.body;
+
+    const query = `
+        UPDATE MealIngredients 
+        SET UserID = @UserID, MealID = @MealID, FoodName = @FoodName, Nutrients = @Nutrients, IngredientsAmount = @IngredientsAmount
+        WHERE MealIngredientsID = @mealIngredientsID;
+    `;
+
+    const request = new sql.Request();
+    request.input('UserID', sql.Int, UserID);
+    request.input('MealID', sql.Int, MealID);
+    request.input('FoodName', sql.VarChar(255), FoodName);
+    request.input('Nutrients', sql.NVarChar(sql.MAX), JSON.stringify(Nutrients)); // Assuming Nutrients is an object
+    request.input('IngredientsAmount', sql.Decimal(10, 2), IngredientsAmount);
+    request.input('mealIngredientsID', sql.Int, mealIngredientsID);
+
+    request.query(query)
+        .then(() => res.send('Meal Ingredients updated successfully'))
+        .catch(err => res.status(500).send(err.message));
+});
+
+// Delete Meal Ingredients
+app.delete('/api/mealingredients/:mealIngredientsID', (req, res) => {
+    const mealIngredientsID = req.params.mealIngredientsID;
+
+    const query = `
+        DELETE FROM MealIngredients WHERE MealIngredientsID = @mealIngredientsID;
+    `;
+
+    const request = new sql.Request();
+    request.input('mealIngredientsID', sql.Int, mealIngredientsID);
+
+    request.query(query)
+        .then(() => res.send('Meal Ingredients deleted successfully'))
+        .catch(err => res.status(500).send(err.message));
+});
 
 
 
