@@ -766,6 +766,55 @@ app.get('/api/daily-nutri-calories/:userID', async (req, res) => {
         res.status(500).send(error.message);
     }
 });
+// Example endpoint to retrieve daily nutri data
+app.get('/api/daily-nutri-calories-daywise/:userID', async (req, res) => {
+    try {
+        const userID = req.params.userID;
+
+        const mealQuery = `
+        SELECT *
+        FROM (
+            SELECT 
+                *,
+                CONCAT([Date], ' ', [Time]) AS datetime_column
+            FROM 
+                [dbo].[MealTracker]
+        ) AS sub
+        WHERE 
+            sub.datetime_column >= DATEADD(DAY, -30, GETDATE());`;
+
+        const activityQuery = `
+        SELECT *
+        FROM (
+            SELECT 
+                *,
+                CONCAT([Date], ' ', [Time]) AS datetime_column
+            FROM 
+                [dbo].[ActivityTracker]
+        ) AS sub
+        WHERE 
+            sub.datetime_column >= DATEADD(DAY, -30, GETDATE());`;
+
+        const request = new sql.Request();
+        request.input('UserID', sql.Int, userID);
+
+        // Execute both queries concurrently
+        const [mealResult, activityResult] = await Promise.all([
+            request.query(mealQuery),
+            request.query(activityQuery)
+        ]);
+
+        // Combine the results
+        const combinedResult = {
+            meals: mealResult.recordset,
+            activities: activityResult.recordset
+        };
+
+        res.status(200).json(combinedResult);
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
+});
 
 // READ operation - Get all records for a specific user
 app.get('/api/Ingredients', (req, res) => {
