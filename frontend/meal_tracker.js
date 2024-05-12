@@ -106,7 +106,7 @@ function addIntakeRecordToDOM(mealRecord, recordId, mealId) {
   recordDiv.classList.add("record");
   recordDiv.dataset.id = recordId;
   recordDiv.innerHTML = `
-      <span>${mealRecord.date} - ${selectedMeal.mealName} - ${mealRecord.weight}g at ${mealRecord.time}, ${kcalValue} kcal</span>
+      <span>${new Date(mealRecord.date).toISOString().slice(0, 10).replace('T', ' ')} - ${selectedMeal.mealName} - ${mealRecord.weight}g at ${mealRecord.time}, ${kcalValue} kcal</span>
       <button class="edit">Edit</button>
       <button class="delete" onClick=deleteMealTracker('${recordId}')>Delete</button>
   `;
@@ -156,10 +156,10 @@ document.getElementById("registerIntakeButton").addEventListener("click", functi
     mealID: String(selectedMealData.mealID),
     mealName: selectedMealData.mealName,
     weight: mealWeight,
-    timeOfMeal: currentMealDate,
+    timeOfMeal: mealTime,//currentMealDate,
     nutrients: nutrients,
     drinkVolume: drinkVolume,
-    drinkTime: currentDrinkDate,
+    drinkTime: drinkTime,
     time: mealTime,
     date: mealDate,
     userID: userId

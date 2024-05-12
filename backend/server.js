@@ -190,7 +190,6 @@ app.get('/api/meals/:userID/:mealID', (req, res) => {
 // Endpoint to get all meals and meal ingredients by user ID
 app.get('/api/meals/:userID', (req, res) => {
     const userId = req.params.userID;
-    console.log(userId)
     // Query to retrieve all meals and their ingredients for the given user ID
     const query = `
         SELECT Meal.*, MealIngredients.*
@@ -236,7 +235,6 @@ app.get('/api/meals/:userID', (req, res) => {
 // Define the DELETE endpoint to remove a meal and its ingredients
 app.delete('/api/meals/:mealID', (req, res) => {
     const mealID = req.params.mealID;
-    console.log({ mealID })
     // Query to delete the meal from the Meal table
     const deleteMealQuery = `
         DELETE FROM [dbo].[Meal]
@@ -314,7 +312,6 @@ app.delete('/api/activities/:activityId', (req, res) => {
 
 app.post('/api/mealtracker', (req, res) => {
     const { userID, mealID, weight, timeOfMeal, nutrients, drinkVolume, drinkTime, time, date } = req.body;
-    console.log({ userID, })
     const query = `
         INSERT INTO MealTracker (UserID, MealID, Weight, TimeOfMeal, Nutrients, DrinkVolume, DrinkTime, Time, Date)
         VALUES (@userID, @mealID, @weight, @timeOfMeal, @nutrients, @drinkVolume, @drinkTime, @time, @date);
@@ -324,10 +321,10 @@ app.post('/api/mealtracker', (req, res) => {
     request.input('UserID', sql.Int, userID);
     request.input('MealID', sql.VarChar(255), mealID);
     request.input('Weight', sql.Decimal(10, 2), weight);
-    request.input('TimeOfMeal', sql.DateTime, timeOfMeal);
+    request.input('TimeOfMeal', sql.VarChar(8), timeOfMeal);
     request.input('Nutrients', sql.NVarChar(sql.MAX), JSON.stringify(nutrients));
     request.input('DrinkVolume', sql.Decimal(10, 2), drinkVolume);
-    request.input('DrinkTime', sql.DateTime, drinkTime);
+    request.input('DrinkTime', sql.VarChar(8), drinkTime);
     request.input('Time', sql.VarChar(8), time);
     request.input('Date', sql.Date, date);
 
@@ -343,8 +340,8 @@ app.post('/api/mealtracker', (req, res) => {
 //Update Meal Tracker
 app.put('/api/mealtracker/:mealTrackerID', (req, res) => {
     const mealTrackerID = req.params.mealTrackerID;
-    const { userID, mealID, mealName, weight, timeOfMeal, nutrients, drinkVolume, drinkTime, time, date } = req.body;
-
+    const { userID, mealID, mealName, weight, TimeOfMeal, nutrients, drinkVolume, drinkTime, time, date } = req.body;
+    console.log({ mealTrackerID }, { TimeOfMeal })
     //to update MealTracker table
     const query = `
         UPDATE MealTracker 
@@ -358,10 +355,10 @@ app.put('/api/mealtracker/:mealTrackerID', (req, res) => {
     request.input('UserID', sql.Int, userID);
     // request.input('MealName', sql.VarChar(255), mealName);
     request.input('Weight', sql.Decimal(10, 2), weight);
-    request.input('TimeOfMeal', sql.DateTime, timeOfMeal);
+    request.input('TimeOfMeal', sql.VarChar(8), TimeOfMeal);
     request.input('Nutrients', sql.NVarChar(sql.MAX), nutrients);
     request.input('DrinkVolume', sql.Decimal(10, 2), drinkVolume);
-    request.input('DrinkTime', sql.DateTime, drinkTime);
+    request.input('DrinkTime', sql.VarChar(8), drinkTime);
     request.input('Time', sql.VarChar(8), time);
     request.input('Date', sql.Date, date);
     request.input('mealTrackerID', sql.Int, mealTrackerID);
@@ -395,13 +392,12 @@ app.put('/api/mealtracker/:mealTrackerID', (req, res) => {
 app.get('/api/mealtracker/:userId', (req, res) => {
     const userId = req.params.userId;
     const query = `
-        SELECT Meal.*, MealTracker.* FROM [dbo].[Meal] JOIN [dbo].[MealTracker] ON Meal.MealID = MealTracker.MealID WHERE MealTracker.UserID = ${userId};
+        SELECT Meal.*, MealTracker.* FROM [dbo].[Meal] JOIN [dbo].[MealTracker] ON Meal.MealID = MealTracker.MealID WHERE MealTracker.UserID = ${userId} order By MealTracker.Date Desc ;
     `;
 
     sql.query(query)
         .then(result => {
             if (result.recordset.length > 0) {
-                console.log(result.recordset)
                 const mealTrackerData = result.recordset.map(row => ({
                     mealTrackerID: row.MealTrackerID,
                     userID: row.UserID[0],
@@ -633,7 +629,6 @@ app.get('/api/mealIngredientTracker/:userID', (req, res) => {
 app.put('/api/mealIngredientTracker/:id', (req, res) => {
     const { UserID, Weight, IngredientsID, Mealname, TimeOfMeal, Nutrients, DrinkVolume, DrinkTime, Date, Time } = req.body;
     const { id } = req.params;
-    console.log({ id }, { Weight })
     const query = `UPDATE MealIngredientTracker SET Weight = @Weight, TimeOfMeal = @TimeOfMeal, Nutrients = @Nutrients, DrinkVolume = @DrinkVolume, DrinkTime = @DrinkTime, Date = @Date, Time = @Time
                    WHERE MealIngredientTrackerID = @MealIngredientTrackerID;`;
     const request = new sql.Request();
@@ -731,9 +726,45 @@ app.post('/api/basal-metabolic-rate/calculate', (req, res) => {
 
 
 // Example endpoint to retrieve daily nutri data
-app.get('/api/daily-nutri', (req, res) => {
-    const { userId, date } = req.query;
-    // Retrieve and format data for the specified user and date
+app.get('/api/daily-nutri-calories/:userID', async (req, res) => {
+    try {
+        const userID = req.params.userID;
+
+        const mealQuery = `
+            SELECT *,
+                CONCAT([Date], ' ', [Time]) AS datetime_column
+            FROM 
+                [dbo].[MealTracker]
+            WHERE 
+                CONCAT([Date], ' ', [Time]) >= GETDATE() AND UserID = @UserID;`;
+
+        const activityQuery = `
+            SELECT *,
+                CONCAT([Date], ' ', [Time]) AS datetime_column
+            FROM 
+                [dbo].[ActivityTracker]
+            WHERE 
+                CONCAT([Date], ' ', [Time]) >= GETDATE() AND UserID = @UserID;`;
+
+        const request = new sql.Request();
+        request.input('UserID', sql.Int, userID);
+
+        // Execute both queries concurrently
+        const [mealResult, activityResult] = await Promise.all([
+            request.query(mealQuery),
+            request.query(activityQuery)
+        ]);
+
+        // Combine the results
+        const combinedResult = {
+            meals: mealResult.recordset,
+            activities: activityResult.recordset
+        };
+
+        res.status(200).json(combinedResult);
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
 });
 
 // READ operation - Get all records for a specific user
