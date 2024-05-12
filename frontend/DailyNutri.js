@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
 
             const data = await response.json();
             let brmData = await bmrResponse.json();
-            let bmrCalculatedValue = ((brmData.BmrValue) * 238.84).toFixed(2)
+            let bmrCalculatedValue = brmData.BmrValue ? ((brmData.BmrValue) * 238.84).toFixed(2) : 0
             mealRecords = data;
             if (view == 'thirtyDays') {
                 container.appendChild(generateMealAndDrinkTableMonth(mealRecords.meals, mealRecords.activities, bmrCalculatedValue));

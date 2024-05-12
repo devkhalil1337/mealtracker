@@ -560,7 +560,7 @@ app.put('/api/bmr/:id', (req, res) => {
 
     request.query(query, (err, result) => {
         if (err) {
-            res.status(500).send(err.message);
+            res.status(500).json({ "message": err.message });
         } else {
             res.status(200).send('BMR record updated successfully');
         }

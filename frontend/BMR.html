@@ -85,13 +85,15 @@
           }
         })
         .then((records) => {
+          records = records[0]
           if (records) {
             OldBMR = calculateBMR(records.Age, records.Weight);
             records.BMR = OldBMR;
-            displayBMRRecords(records);
             OldBmrID = records.BMRID;
+            hasBMRRecord = records.BMRID ? true : false;
+            if (hasBMRRecord)
+              displayBMRRecords(records);
             console.log(OldBmrID)
-            hasBMRRecord = true;
           }
         })
         .catch((error) => {
