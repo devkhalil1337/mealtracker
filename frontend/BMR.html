@@ -85,12 +85,12 @@
           }
         })
         .then((records) => {
-          if (records.length > 0) {
-            console.log(records.length > 0);
-            OldBMR = calculateBMR(records[0].Age, records[0].Weight);
-            records[0].BMR = OldBMR;
+          if (records) {
+            OldBMR = calculateBMR(records.Age, records.Weight);
+            records.BMR = OldBMR;
             displayBMRRecords(records);
-            OldBmrID = records[0].BMRID;
+            OldBmrID = records.BMRID;
+            console.log(OldBmrID)
             hasBMRRecord = true;
           }
         })
@@ -145,7 +145,7 @@
     }
 
     // Function to display BMR records on the page
-    function displayBMRRecords(records) {
+    function displayBMRRecords(record) {
       const activityRecordsDiv = document.getElementById("result");
       // Clear previous records
       activityRecordsDiv.innerHTML = "";
@@ -153,15 +153,13 @@
       const bmrHeading = document.createElement("h3");
       bmrHeading.textContent = "Your BMR";
       activityRecordsDiv.appendChild(bmrHeading);
-      records.forEach((record) => {
-        const formattedDateTime = new Date(record.Datetime).toLocaleString(); // Format date and time
-        const recordElement = document.createElement("div");
-        recordElement.classList.add("record");
-        recordElement.innerHTML = `
-            <span>${formattedDateTime} - BMR: ${record.BMR} MJ/d</span>
+      const formattedDateTime = new Date(record.Datetime).toLocaleString(); // Format date and time
+      const recordElement = document.createElement("div");
+      recordElement.classList.add("record");
+      recordElement.innerHTML = `
+            <span>${formattedDateTime} - BMR: ${record.BmrValue} MJ/d</span>
           `;
-        activityRecordsDiv.appendChild(recordElement);
-      });
+      activityRecordsDiv.appendChild(recordElement);
     }
 
     // Function to calculate BMR on the frontend
@@ -206,7 +204,7 @@
         age: age,
         weight: weight,
         datetime: formattedDateTime, // Include date and time in the request body
-        bmrvalue: String(bmrValue)
+        bmrvalue: bmrValue.toFixed(2)
       };
 
       if (!hasBMRRecord) {
