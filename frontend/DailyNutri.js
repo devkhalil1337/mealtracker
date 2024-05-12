@@ -21,16 +21,20 @@ document.addEventListener("DOMContentLoaded", (e) => {
                 }
             });
 
-            if (!response.ok) {
+            let bmrResponse = await fetch(`http://localhost:3000/api/bmr/${userId}`)
+
+            if (!response.ok || !bmrResponse.ok) {
                 throw new Error('Network response was not ok');
             }
 
             const data = await response.json();
+            let brmData = await bmrResponse.json();
+            let bmrCalculatedValue = ((brmData.BmrValue) * 238.84).toFixed(2)
             mealRecords = data;
             if (view == 'thirtyDays') {
-                container.appendChild(generateMealAndDrinkTableMonth(mealRecords.meals, mealRecords.activities));
+                container.appendChild(generateMealAndDrinkTableMonth(mealRecords.meals, mealRecords.activities, bmrCalculatedValue));
             } else {
-                container.appendChild(generateMealAndDrinkTableDay(mealRecords.meals, mealRecords.activities));
+                container.appendChild(generateMealAndDrinkTableDay(mealRecords.meals, mealRecords.activities, bmrCalculatedValue));
 
             }
         } catch (error) {
@@ -40,8 +44,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
         // Your existing code...
     }
 
-
-    function generateMealAndDrinkTableMonth(mealRecords, activityRecords) {
+    function generateMealAndDrinkTableMonth(mealRecords, activityRecords, bmrCalculatedValue) {
         const currentDate = new Date();
         const thirtyDaysAgo = new Date(currentDate.getTime() - 30 * 24 * 60 * 60 * 1000); // 30 days ago
 
@@ -93,7 +96,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
         headerCellWater.textContent = 'Total Water Intake (L)';
         headerCellCalories.textContent = 'Total Calories Intake';
         headerCellCaloriesBurned.textContent = 'Total Calories Burned';
-
+        let BmrCalPerHour = bmrCalculatedValue ? (bmrCalculatedValue) : 0
         // Populate table with data
         Object.keys(dayTotals).forEach(date => {
             const row = table.insertRow();
@@ -105,17 +108,14 @@ document.addEventListener("DOMContentLoaded", (e) => {
             cellDay.textContent = date;
             cellWater.textContent = dayTotals[date].water.toFixed(2);
             cellCalories.textContent = dayTotals[date].calories.toFixed(2);
-            cellCaloriesBurned.textContent = dayTotals[date].caloriesBurned.toFixed(2);
+            cellCaloriesBurned.textContent = (Number(dayTotals[date].caloriesBurned) + Number(BmrCalPerHour)).toFixed(2);
         });
 
         return table;
     }
 
-    function generateMealAndDrinkTableDay(mealRecords, activitRecords) {
+    function generateMealAndDrinkTableDay(mealRecords, activitRecords, bmrCalculatedValue) {
         // Your existing code for generating the table based on meal records
-        const currentDate = new Date();
-        const currentDayStart = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), 0, 0, 0);
-        const currentDayEnd = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), 23, 59, 59);
         mealRecords.filter(rec => {
 
             rec.date = new Date(rec.Date).toISOString().slice(0, 10).replace('T', ' ');
@@ -169,7 +169,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
             hourlyTotals[recordHour] = (hourlyTotals[recordHour] || { water: 0, calories: 0, caloriesburned: 0 });
             hourlyTotals[recordHour].caloriesburned += caloriesburned || 0;
         });
-
+        let BmrCalPerHour = bmrCalculatedValue ? (bmrCalculatedValue / 24).toFixed(2) : 0
         for (let hour = 0; hour <= 23; hour++) {
             const row = table.insertRow();
             const cellHour = row.insertCell(0);
@@ -179,8 +179,8 @@ document.addEventListener("DOMContentLoaded", (e) => {
 
             cellHour.textContent = `${hour}-${hour + 1}`;
             cellWater.textContent = hourlyTotals[hour] ? hourlyTotals[hour].water : 0;
-            cellCalories.textContent = hourlyTotals[hour] ? hourlyTotals[hour].calories : 0;
-            cellBurnCalories.textContent = hourlyTotals[hour] ? hourlyTotals[hour].caloriesburned : 0;
+            cellCalories.textContent = hourlyTotals[hour] ? hourlyTotals[hour].calories.toFixed(2) : 0;
+            cellBurnCalories.textContent = hourlyTotals[hour] ? Number(hourlyTotals[hour].caloriesburned) + Number(BmrCalPerHour) : BmrCalPerHour;
         }
         return table;
     }

@@ -188,11 +188,11 @@
       const bmrHeading = document.createElement("h3");
       bmrHeading.textContent = "Your BMR";
       activityRecordsDiv.appendChild(bmrHeading);
-
+      let bmrValue = calculateBMR(age, weight);
       const recordElement = document.createElement("div");
       recordElement.classList.add("record");
       recordElement.innerHTML = `
-            <span>${Datetime} - BMR: ${calculateBMR(age, weight)} MJ/d</span>
+            <span>${Datetime} - BMR: ${bmrValue} MJ/d</span>
           `;
       activityRecordsDiv.appendChild(recordElement);
 
@@ -206,6 +206,7 @@
         age: age,
         weight: weight,
         datetime: formattedDateTime, // Include date and time in the request body
+        bmrvalue: String(bmrValue)
       };
 
       if (!hasBMRRecord) {

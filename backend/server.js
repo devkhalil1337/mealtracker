@@ -512,14 +512,15 @@ app.delete('/api/mealtracker/:mealTrackerID', (req, res) => {
 
 // CREATE operation - Add a new BMR record
 app.post('/api/bmr', (req, res) => {
-    const { userID, age, weight, datetime } = req.body;
-    const query = `INSERT INTO BMR (UserID, Age, Weight, Datetime)
-                   VALUES (@UserID, @Age, @Weight, @Datetime);`;
+    const { userID, age, weight, datetime, bmrvalue } = req.body;
+    const query = `INSERT INTO BMR (UserID, Age, Weight, Datetime,BmrValue)
+                   VALUES (@UserID, @Age, @Weight, @Datetime,@BmrValue);`;
     const request = new sql.Request();
     request.input('UserID', sql.Int, userID);
     request.input('Age', sql.Int, age);
     request.input('Weight', sql.Decimal(10, 2), weight);
     request.input('Datetime', sql.DateTime, datetime);
+    request.input('BmrValue', sql.VarChar(8), bmrvalue);
 
     request.query(query, (err, result) => {
         if (err) {
@@ -545,9 +546,9 @@ app.get('/api/bmr/:userID', (req, res) => {
 
 // UPDATE operation - Update a BMR record
 app.put('/api/bmr/:id', (req, res) => {
-    const { userID, age, weight, datetime } = req.body;
+    const { userID, age, weight, datetime, bmrvalue } = req.body;
     const { id } = req.params;
-    const query = `UPDATE BMR SET UserID = @UserID, Age = @Age, Weight = @Weight, Datetime = @Datetime
+    const query = `UPDATE BMR SET UserID = @UserID, Age = @Age, Weight = @Weight, Datetime = @Datetime , BmrValue = @BmrValue
                    WHERE BMRID = @BMRID;`;
     const request = new sql.Request();
     request.input('BMRID', sql.Int, id);
@@ -555,6 +556,7 @@ app.put('/api/bmr/:id', (req, res) => {
     request.input('Age', sql.Int, age);
     request.input('Weight', sql.Decimal(10, 2), weight);
     request.input('Datetime', sql.DateTime, datetime);
+    request.input('BmrValue', sql.VarChar(8), bmrvalue);
 
     request.query(query, (err, result) => {
         if (err) {
